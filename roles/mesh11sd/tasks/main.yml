@@ -1,0 +1,31 @@
+---
+# Fix ath10k drivers
+# https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support
+- name: Fix ath10k drivers
+  ansible.builtin.include_tasks: ath10k.yml
+  when: mesh_enabled and ath10k_ct_fix
+
+# Install required packages
+- name: Install required packages
+  ansible.builtin.include_tasks: prepare.yml
+  when: mesh_enabled
+
+# Create mesh interface
+- name: Create mesh interface
+  ansible.builtin.include_role:
+    name: "wireless"
+  vars:
+    wireless_interfaces: "{{ mesh11sd_interfaces | default([]) }}"
+  when: mesh_enabled
+
+# Configure mesh interface
+- name: Configure mesh interface
+  ansible.builtin.include_tasks: configure.yml
+  when: mesh_enabled
+
+# Apply changes and reload wireless service
+- name: Apply changes and reload wireless
+  when: mesh_enabled
+  uci:
+    command: commit
+  notify: Reload wireless

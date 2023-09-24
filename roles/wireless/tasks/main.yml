@@ -1,0 +1,16 @@
+---
+# Configure device section
+- name: Configure device section
+  ansible.builtin.include_tasks: device.yml
+  loop: "{{ wireless_devices | default([]) }}"
+
+# Configure interface section
+- name: Configure interface section
+  ansible.builtin.include_tasks: interface.yml
+  loop: "{{ wireless_interfaces | default([]) }}"
+
+# Apply changes and reload wireless service
+- name: Apply changes and reload wireless
+  uci:
+    command: commit
+  notify: Reload wireless

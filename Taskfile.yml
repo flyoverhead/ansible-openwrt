@@ -1,0 +1,10 @@
+---
+version: "3"
+
+tasks:
+  test:
+    dir: test
+    cmds:
+      - echo "Run test playbook for opewnrt device"
+      - ansible-galaxy install -r requirements.yml
+      - ansible-playbook --inventory inventory.yml playbook.yml

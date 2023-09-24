@@ -1,0 +1,46 @@
+---
+# Set state status for network rule
+- name: Set state status for network rule {{ item.id | default('@rule[-1]') }}
+  ansible.builtin.set_fact:
+    network_rule_state: "{{ item.state | default('present') }}"
+
+# Delete network rule
+- name: Delete network rule {{ item.id }}
+  when: "'absent' in network_rule_state"
+  uci:
+    command: "absent"
+    config: "network"
+    section: "{{ item.id }}"
+    type: "rule"
+
+# Create and configure network rule
+- name: Create and configure network rule
+  when: "'present' in network_rule_state"
+  block:
+    # Create network rule
+    - name: Create network rule {{ item.id | default('@rule[-1]') }}
+      uci:
+        command: "add"
+        config: "network"
+        section: "{{ item.id | default('@rule[-1]') }}"
+        type: "rule"
+
+    # Configure network rule
+    - name: Configure network rule {{ item.id | default('@rule[-1]') }}
+      uci:
+        command: "set"
+        config: "network"
+        section: "{{ item.id | default('@rule[-1]') }}"
+        type: "rule"
+        value:
+          mark: "{{ item.mark | default(omit) }}"
+          in: "{{ item.in | default(omit) }}"
+          out: "{{ item.out | default(omit) }}"
+          src: "{{ item.src | default(omit) }}"
+          dest: "{{ item.dest | default(omit) }}"
+          invert: "{{ item.invert | default(omit) }}"
+          priority: "{{ item.priority | default(omit) }}"
+          lookup: "{{ item.lookup | default(omit) }}"
+          goto: "{{ item.goto | default([]) | join(' ') }}"
+          action: "{{ item.action | default(omit) }}"
+          disabled: "{{ item.disabled | default(omit) }}"

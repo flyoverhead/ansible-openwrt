@@ -1,0 +1,48 @@
+---
+# Remove non-mesh wpad packages
+- name: Remove non-mesh wpad packages
+  opkg:
+    name: "{{ item }}"
+    state: "absent"
+  loop: "{{ non_mesh_pkgs }}"
+
+# Update opkg cache
+- name: Update opkg cache
+  ansible.builtin.command:
+    cmd: "opkg update"
+  changed_when: false
+
+# Install batman packages
+- name: Install batman packages
+  opkg:
+    name: "{{ item }}"
+    state: "present"
+  loop: "{{ batman_pkgs }}"
+
+# Check B.A.T.M.A.N. LuCI package status
+- name: Check batman luci package status
+  ansible.builtin.command:
+    cmd: "opkg list-installed | grep luci-proto-batman-adv | awk '{print $1}'"
+    uses_shell: true
+  register: batman_luci_package_status
+  changed_when: batman_luci_package_status.rc != 0
+
+# Install B.A.T.M.A.N. LuCI package
+- name: Install batman luci package
+  when: >
+    batman_luci_package_status.stdout is undefined or
+    batman_luci_package_status.stdout | length == 0
+  block:
+    # Copy local package file
+    - name: Copy luci-proto-batman-adv package file
+      ansible.builtin.copy:
+        src: "luci-proto-batman-adv.ipk"
+        dest: "/tmp/luci-proto-batman-adv.ipk"
+        owner: "root"
+        group: "root"
+        mode: "0755"
+
+    # Install B.A.T.M.A.N. LuCI package
+    - name: Install luci-proto-batman-adv package file
+      ansible.builtin.command:
+        cmd: "opkg install /tmp/luci-proto-batman-adv.ipk"

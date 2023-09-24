@@ -1,0 +1,39 @@
+---
+# Policy-Based Routing packages
+pbr_pkgs: ["pbr", "luci-app-pbr"]
+
+# Dnsmasq-full required version
+dnsmasq_full_required_version: "2.89"
+
+# PBR service configuration
+pbr_service:
+  enabled: ""
+  verbosity: ""
+  strict_enforcement: ""
+  resolver_set: ""
+  resolver_instance: []
+  ipv6_enabled: ""
+  supported_interface: []
+  ignored_interface: []
+  boot_timeout: ""
+  rule_create_option: ""
+  icmp_interface: ""
+  wan_mark: ""
+  fw_mask: ""
+  secure_reload: ""
+  webui_show_ignore_target: ""
+  webui_supported_protocol: []
+
+# PBR policies
+pbr_policies:
+  - id: ""
+    name: ""
+    state: ""
+    enabled: ""
+    interface: ""
+    src_addr: []
+    src_port: []
+    dest_addr: []
+    dest_port: []
+    proto: ""
+    chain: ""

@@ -1,0 +1,19 @@
+---
+# Deafult extroot status
+extroot_enabled: false
+
+# extroot required packages
+extroot_pkgs:
+  [
+    "kmod-usb-core",
+    "kmod-usb-storage",
+    "kmod-usb2",
+    "kmod-usb3",
+    "block-mount",
+    "kmod-fs-ext4",
+    "e2fsprogs",
+    "parted",
+  ]
+
+# extroot device
+extroot_device: "sda"

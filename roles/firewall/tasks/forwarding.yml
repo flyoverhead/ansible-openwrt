@@ -1,0 +1,41 @@
+---
+# Set state status for firewall forwarding
+- name: Set state status for firewall forwarding {{ item.id | default('@forwarding[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_forwarding_state: "{{ item.state | default('present') }}"
+
+# Delete firewall forwarding
+- name: Delete firewall forwarding {{ item.id }}
+  when: "'absent' in firewall_forwarding_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "forwarding"
+
+# Create and configure firewall forwarding
+- name: Create and configure firewall forwarding
+  when: "'present' in firewall_forwarding_state"
+  block:
+    # Create firewall forwarding
+    - name: Create firewall forwarding {{ item.id | default('@forwarding[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@forwarding[-1]') }}"
+        type: "forwarding"
+
+    # Configure firewall forwarding
+    - name: Configure firewall forwarding {{ item.id | default('@forwarding[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@forwarding[-1]') }}"
+        type: "forwarding"
+        value:
+          name: "{{ item.id | default(omit) }}"
+          src: "{{ item.src | default(omit) }}"
+          dest: "{{ item.dest | default(omit) }}"
+          family: "{{ item.family | default(omit) }}"
+          ipset: "{{ item.ipset | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

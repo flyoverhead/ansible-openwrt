@@ -1,0 +1,30 @@
+---
+- name: Configure openwrt
+  hosts: openwrt
+  ignore_unreachable: true
+  gather_facts: false
+  tags: configure_openwrt
+
+  pre_tasks:
+    - name: Update package cache
+      ansible.builtin.command:
+        cmd: "opkg update"
+      changed_when: false
+
+  roles:
+    - extroot
+    - system
+    - network
+    - batman
+    - wireless
+    - wireguard
+    - firewall
+    - pbr
+    - dropbear
+    - dhcp
+
+  post_tasks:
+    - name: Reboot device
+      ansible.builtin.command:
+        cmd: "reboot"
+      changed_when: false

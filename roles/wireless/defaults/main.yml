@@ -1,0 +1,32 @@
+---
+# device section
+wireless_devices:
+  - id: ""
+    type: ""
+    disabled: ""
+    channel: ""
+    band: ""
+    htmode: ""
+    country: ""
+
+# interface section
+wireless_interfaces:
+  - id: ""
+    name: ""
+    state: ""
+    device: ""
+    network: []
+    mode: ""
+    disabled: ""
+    ssid: ""
+    mesh_id: ""
+    hidden: ""
+    isolate: ""
+    encryption: ""
+    key: ""
+    macfilter: ""
+    maclist: []
+    ieee80211r: ""
+    mobility_domain: ""
+    ft_over_ds: ""
+    ft_psk_generate_local: ""

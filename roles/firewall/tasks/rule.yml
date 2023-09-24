@@ -1,0 +1,50 @@
+---
+# Set state status for firewall rule
+- name: Set state status for firewall rule {{ item.id | default('@rule[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_rule_state: "{{ item.state | default('present') }}"
+
+# Delete firewall rule
+- name: Delete firewall rule {{ item.id }}
+  when: "'absent' in firewall_rule_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "rule"
+
+# Create and configure firewall rule
+- name: Create and configure firewall rule
+  when: "'present' in firewall_rule_state"
+  block:
+    # Create firewall rule
+    - name: Create firewall rule {{ item.id | default('@rule[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@rule[-1]') }}"
+        type: "rule"
+
+    # Configure firewall rule
+    - name: Configure firewall rule {{ item.id | default('@rule[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@rule[-1]') }}"
+        type: "rule"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          src: "{{ item.src | default(omit) }}"
+          src_ip: "{{ item.src_ip | default(omit) }}"
+          src_port: "{{ item.src_port | default([]) | join(' ') }}"
+          src_mac: "{{ item.src_mac | default(omit) }}"
+          dest: "{{ item.dest | default(omit) }}"
+          dest_ip: "{{ item.dest_ip | default(omit) }}"
+          dest_port: "{{ item.dest_port | default([]) | join(' ') }}"
+          target: "{{ item.target | default(omit) }}"
+          proto: "{{ item.proto | default([]) | join(' ') }}"
+          family: "{{ item.family | default(omit) }}"
+          ipset: "{{ item.ipset | default(omit) }}"
+          mark: "{{ item.mark | default(omit) }}"
+          set_mark: "{{ item.set_mark | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

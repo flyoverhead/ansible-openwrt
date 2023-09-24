@@ -1,0 +1,10 @@
+---
+# Create new partition in external USB disk
+- name: Create partition in external usb device
+  ansible.builtin.command:
+    cmd: "parted -s /dev/{{ extroot_device }} -- mklabel gpt mkpart extroot 2048s -2048s"
+
+# Format partition to EXT4 file system
+- name: Format partition to ext4 fs
+  ansible.builtin.command:
+    cmd: "mkfs.ext4 -FL extroot /dev/{{ extroot_device }}1"

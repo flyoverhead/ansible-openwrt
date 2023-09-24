@@ -1,0 +1,7 @@
+---
+# Reload dhcp service
+- name: Reload dhcp
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  loop: ["dnsmasq", "odhcpd"]

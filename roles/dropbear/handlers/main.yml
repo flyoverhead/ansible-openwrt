@@ -1,0 +1,6 @@
+---
+# Reload dropbear service
+- name: Reload dropbear
+  ansible.builtin.service:
+    name: dropbear
+    state: reloaded

@@ -1,0 +1,25 @@
+---
+# Configure service settings
+- name: Configure service settings
+  uci:
+    command: "set"
+    config: "pbr"
+    section: "config"
+    type: "pbr"
+    value:
+      enabled: "{{ pbr_service.enabled | default(omit) }}"
+      verbosity: "{{ pbr_service.verbosity | default(omit) }}"
+      strict_enforcement: "{{ pbr_service.strict_enforcement | default(omit) }}"
+      resolver_set: "{{ pbr_service.resolver_set | default(omit) }}"
+      resolver_instance: "{{ pbr_service.resolver_instance | default([]) | join(' ') }}"
+      ipv6_enabled: "{{ pbr_service.ipv6_enabled | default(omit) }}"
+      supported_interface: "{{ pbr_service.supported_interface | default([]) | join(' ') }}"
+      ignored_interface: "{{ pbr_service.ignored_interface | default([]) | join(' ') }}"
+      boot_timeout: "{{ pbr_service.boot_timeout | default(omit) }}"
+      rule_create_option: "{{ pbr_service.rule_create_option | default(omit) }}"
+      icmp_interface: "{{ pbr_service.icmp_interface | default(omit) }}"
+      wan_mark: "{{ pbr_service.wan_mark | default(omit) }}"
+      fw_mask: "{{ pbr_service.fw_mask | default(omit) }}"
+      secure_reload: "{{ pbr_service.secure_reload | default(omit) }}"
+      webui_show_ignore_target: "{{ pbr_service.webui_show_ignore_target | default(omit) }}"
+      webui_supported_protocol: "{{ pbr_service.webui_supported_protocol | default([]) | join(' ') }}"

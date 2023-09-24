@@ -1,0 +1,50 @@
+---
+# Set state status for network interface
+- name: Set state status for network interface {{ item.id }}
+  ansible.builtin.set_fact:
+    network_interface_state: "{{ item.state | default('present') }}"
+
+# Delete network interface
+- name: Delete network interface {{ item.id }}
+  when: "'absent' in network_interface_state"
+  uci:
+    command: "absent"
+    config: "network"
+    section: "{{ item.id }}"
+    type: "interface"
+
+# Create and configure network interface
+- name: Create and configure network interface
+  when: "'present' in network_interface_state"
+  block:
+    # Create network interface
+    - name: Create network interface {{ item.id }}
+      uci:
+        command: "add"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+
+    # Configure network interface
+    - name: Configure network interface {{ item.id }}
+      uci:
+        command: "set"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+        value:
+          device: "{{ item.device | default(omit) }}"
+          proto: "{{ item.proto | default(omit) }}"
+          auto: "{{ item.auto | default(omit) }}"
+          force_link: "{{ item.force_link | default(omit) }}"
+          ipaddr: "{{ item.ipaddr | default(omit) }}"
+          netmask: "{{ item.netmask | default(omit) }}"
+          gateway: "{{ item.gateway | default(omit) }}"
+          peerdns: "{{ item.peerdns | default(omit) }}"
+          dns: "{{ item.dns | default([]) | join(' ') }}"
+          username: "{{ item.username | default(omit) }}"
+          password: "{{ item.password | default(omit) }}"
+          mtu: "{{ item.mtu | default(omit) }}"
+          ipv6: "{{ item.ipv6 | default(omit) }}"
+          delegate: "{{ item.delegate | default(omit) }}"
+          ip6assign: "{{ item.ip6assign | default(omit) }}"

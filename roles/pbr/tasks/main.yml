@@ -1,0 +1,19 @@
+---
+# Install required packages
+- name: Install required packages
+  ansible.builtin.include_tasks: prepare.yml
+
+# Configure pbr service settings
+- name: Configure pbr service settings
+  ansible.builtin.include_tasks: service.yml
+
+# Configure pbr policies
+- name: Configure pbr policies
+  ansible.builtin.include_tasks: policy.yml
+  loop: "{{ pbr_policies | default([]) }}"
+
+# Apply changes and reload pbr service
+- name: Apply changes and reload pbr
+  uci:
+    command: commit
+  notify: Reload pbr

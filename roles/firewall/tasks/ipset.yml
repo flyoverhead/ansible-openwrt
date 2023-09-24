@@ -1,0 +1,43 @@
+---
+# Set state status for firewall ipset
+- name: Set state status for firewall ipset {{ item.id | default('@ipset[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_ipset_state: "{{ item.state | default('present') }}"
+
+# Delete firewall ipset
+- name: Delete firewall ipset {{ item.id }}
+  when: "'absent' in firewall_ipset_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "ipset"
+
+# Create and configure firewall ipset
+- name: Create and configure firewall ipset
+  when: "'present' in firewall_ipset_state"
+  block:
+    # Create firewall ipset
+    - name: Create firewall ipset {{ item.id | default('@ipset[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@ipset[-1]') }}"
+        type: "ipset"
+
+    # Configure firewall ipset
+    - name: Configure firewall ipset {{ item.id | default('@ipset[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@ipset[-1]') }}"
+        type: "ipset"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          comment: "{{ item.comment | default(omit) }}"
+          match: "{{ item.match | default([]) | join(' ') }}"
+          entry: "{{ item.entry | default([]) | join(' ') }}"
+          family: "{{ item.family | default(omit) }}"
+          maxelem: "{{ item.maxelem | default(omit) }}"
+          loadfile: "{{ item.loadfile | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

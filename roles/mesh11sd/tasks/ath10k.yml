@@ -1,0 +1,50 @@
+---
+# Check current driver release
+- name: Check current ath10k firmware release
+  ansible.bultin.command:
+    cmd: "opkg list-installed | grep ath10k-firmware | awk '{print $1}'"
+  register: ath10k_firmware_current_release
+
+# Enable reinstall if installed driver contain *-ct postfix
+- name: Enable replacement of current driver
+  ansible.builtin.set_fact:
+    replace_ath10k_ct_driver: true
+  when: "'-ct' in ath10k_firmware_current_release.stdout"
+
+# Replace current driver with new one
+- name: Replace ath10k-ct firmware and module
+  when: replace_ath10k_ct_driver
+  block:
+    # Get current ath10k module package name
+    - name: Check current ath10k module release
+      ansible.builtin.command:
+        cmd: "opkg list-installed | grep kmod-ath10k | awk '{print $1}'"
+      register: ath10k_kmod_current_release
+
+    # Set current ath10k module package name fact
+    - name: Set current ath10k module release fact
+      ansible.builtin.set_fact:
+        ath10k_kmod_pkg_name: "{{ ath10k_kmod_current_release.stdout }}"
+
+    # Set current driver release name fact
+    - name: Set current driver release name fact
+      ansible.builtin.set_fact:
+        ath10k_driver_pkg_name: "{{ ath10k_firmware_current_release.stdout }}"
+
+    # Remove current driver
+    - name: Remove current driver
+      opkg:
+        name: "{{ item }}"
+        state: "absent"
+      loop: ["{{ ath10k_kmod_pkg_name }}", "{{ ath10k_driver_pkg_name }}"]
+
+    # Install new driver
+    - name: Install new driver
+      opkg:
+        name: "{{ item }}"
+        state: "present"
+      loop:
+        [
+          "{{ ath10k_kmod_pkg_name | regex_replace('-?ct', '') }}",
+          "{{ ath10k_driver_pkg_name | regex_replace('-?ct', '') }}",
+        ]

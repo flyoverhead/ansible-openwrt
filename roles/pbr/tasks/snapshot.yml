@@ -1,0 +1,32 @@
+---
+# Get package file name
+- name: Get package file name {{ item }}
+  ansible.builtin.command:
+    cmd: 'curl {{ snapshot_repo_url }} | grep {{ item }} | sed ''s/.*href=\"//'' | sed -r ''s/\".+//'''
+    uses_shell: true
+  register: snapshot_package_file_name
+  changed_when: false
+
+# Set package file name fact
+- name: Set package file name fact
+  ansible.builtin.set_fact:
+    snapshot_package_name: "{{ snapshot_package_file_name.stdout }}"
+
+# Download package file
+- name: Download package file {{ snapshot_package_name }}
+  ansible.builtin.command:
+    cmd: "curl {{ snapshot_repo_url }}{{ snapshot_package_name }} -o {{ snapshot_package_name }}"
+    uses_shell: true
+    chdir: "/tmp"
+
+# Install package file
+- name: Install package from file {{ snapshot_package_name }}
+  ansible.builtin.command:
+    cmd: "opkg install {{ snapshot_package_name }}"
+    chdir: "/tmp"
+
+# Clean package file
+- name: Clean package file {{ snapshot_package_name }}
+  ansible.builtin.command:
+    cmd: "rm -f {{ snapshot_package_name }}"
+    chdir: "/tmp"

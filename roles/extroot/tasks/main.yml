@@ -1,0 +1,39 @@
+---
+# Check extroot status
+- name: Check extroot status
+  ansible.builtin.include_tasks: check.yml
+  when: extroot_enabled
+
+# Install required packages
+- name: Install required packages
+  ansible.builtin.include_tasks: prepare.yml
+  when: extroot_configure
+
+# Configure exteral USB drive
+- name: Configure external usb
+  ansible.builtin.include_tasks: usb.yml
+  when: extroot_configure
+
+# Configure fstab
+- name: Configure fstab
+  ansible.builtin.include_tasks: fstab.yml
+  when: extroot_configure
+
+# Configure system
+- name: Configure system
+  ansible.builtin.include_tasks: system.yml
+  when: extroot_configure
+
+# Apply changes and reboot device
+- name: Apply changes and reboot device
+  when: extroot_configure
+  block:
+    # Commit changes
+    - name: Commit changes
+      uci:
+        command: commit
+      notify: ["Reboot device", "Wait for device to boot up"]
+
+    # Reboot device
+    - name: Reboot device
+      ansible.builtin.meta: flush_handlers

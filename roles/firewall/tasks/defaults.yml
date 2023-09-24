@@ -1,0 +1,18 @@
+---
+# Configure defaults settings
+- name: Configure defaults settings
+  uci:
+    command: "set"
+    config: "firewall"
+    section: "@defaults[0]"
+    type: "defaults"
+    value:
+      input: "{{ firewall_defaults.input | default(omit) }}"
+      forward: "{{ firewall_defaults.forward | default(omit) }}"
+      output: "{{ firewall_defaults.output | default(omit) }}"
+      drop_invalid: "{{ firewall_defaults.drop_invalid | default(omit) }}"
+      synflood_protect: "{{ firewall_defaults.synflood_protect | default(omit) }}"
+      synflood_rate: "{{ firewall_defaults.synflood_rate | default(omit) }}"
+      synflood_burst: "{{ firewall_defaults.synflood_burst | default(omit) }}"
+      flow_offloading: "{{ firewall_defaults.flow_offloading | default(omit) }}"
+      flow_offloading_hw: "{{ firewall_defaults.flow_offloading_hw | default(omit) }}"

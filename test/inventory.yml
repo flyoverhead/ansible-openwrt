@@ -1,0 +1,10 @@
+openwrt:
+  hosts:
+    archer:
+      ansible_host: "192.168.1.1"
+      ansible_user: "root"
+      ansible_scp_extra_args: "-O"
+    mikrotik:
+      ansible_host: "192.168.1.2"
+      ansible_user: "root"
+      ansible_scp_extra_args: "-O"

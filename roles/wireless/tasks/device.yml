@@ -1,0 +1,15 @@
+---
+# Configure wireless device
+- name: Configure wireless device {{ item.id }}
+  uci:
+    command: "set"
+    config: "wireless"
+    section: "{{ item.id }}"
+    type: "wifi-device"
+    value:
+      type: "{{ item.type | default(omit) }}"
+      disabled: "{{ item.disabled | default(omit) }}"
+      channel: "{{ item.channel | default(omit) }}"
+      band: "{{ item.band | default(omit) }}"
+      htmode: "{{ item.htmode | default(omit) }}"
+      country: "{{ item.country | default(omit) }}"

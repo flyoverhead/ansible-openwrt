@@ -1,0 +1,56 @@
+---
+# Set state status for B.A.T.M.A.N. interface
+- name: Set state status for batman interface {{ item.id }}
+  ansible.builtin.set_fact:
+    batman_interface_state: "{{ item.state | default('present') }}"
+
+# Delete B.A.T.M.A.N. interface
+- name: Delete batman interface {{ item.id }}
+  when: "'absent' in batman_interface_state"
+  uci:
+    command: "absent"
+    config: "network"
+    section: "{{ item.id }}"
+    type: "interface"
+
+# Create and configure B.A.T.M.A.N. interface
+- name: Create and configure batman interface
+  when: "'present' in batman_interface_state"
+  block:
+    # Create B.A.T.M.A.N. interface
+    - name: Create batman interface {{ item.id }}
+      uci:
+        command: "add"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+
+    # Configure B.A.T.M.A.N. interface
+    - name: Configure batman interface {{ item.id }}
+      uci:
+        command: "set"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+        value:
+          proto: "{{ item.proto | default(omit) }}"
+          aggregated_ogms: "{{ item.aggregated_ogms | default(omit) }}"
+          routing_algo: "{{ item.routing_algo | default(omit) }}"
+          bonding: "{{ item.bonding | default(omit) }}"
+          fragmentation: "{{ item.fragmentation | default(omit) }}"
+          gw_mode: "{{ item.gw_mode | default(omit) }}"
+          gw_bandwidth: "{{ item.gw_bandwidth | default(omit) }}"
+          gw_sel_class: "{{ item.gw_sel_class | default(omit) }}"
+          log_level: "{{ item.log_level | default(omit) }}"
+          orig_interval: "{{ item.orig_interval | default(omit) }}"
+          bridge_loop_avoidance: "{{ item.bridge_loop_avoidance | default(omit) }}"
+          distributed_arp_table: "{{ item.distributed_arp_table | default(omit) }}"
+          multicast_mode: "{{ item.multicast_mode | default(omit) }}"
+          multicast_fanout: "{{ item.multicast_fanout | default(omit) }}"
+          network_coding: "{{ item.network_coding | default(omit) }}"
+          hop_penalty: "{{ item.hop_penalty | default(omit) }}"
+          ap_isolation: "{{ item.ap_isolation | default(omit) }}"
+          isolation_mark: "{{ item.isolation_mark | default(omit) }}"
+          master: "{{ item.master | default(omit) }}"
+          mtu: "{{ item.mtu | default(omit) }}"
+          delegate: "{{ item.delegate | default(omit) }}"

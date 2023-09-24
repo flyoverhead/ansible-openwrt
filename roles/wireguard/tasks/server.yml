@@ -1,0 +1,111 @@
+---
+# Set state status for wireguard interface
+- name: Set state status for wireguard interface {{ item.id }}
+  ansible.builtin.set_fact:
+    wireguard_interface_state: "{{ item.state | default('present') }}"
+
+# Delete wireguard interface
+- name: Delete wireguard interface {{ item.id }}
+  when: "'absent' in wireguard_interface_state"
+  uci:
+    command: "absent"
+    config: "network"
+    section: "{{ item.id }}"
+    type: "interface"
+
+# Create and configure wireguard interface
+- name: Create and configure user-defined wireguard interface
+  when: "'present' in wireguard_interface_state"
+  block:
+    # Create wireguard interface
+    - name: Create wireguard interface {{ item.id }}
+      uci:
+        command: "add"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+
+    # Configure wireguard interface
+    - name: Configure user-defined wireguard interface {{ item.id }}
+      when: >
+        item.private_key is defined and
+        item.private_key | length > 0
+      uci:
+        command: "set"
+        config: "network"
+        section: "{{ item.id }}"
+        type: "interface"
+        value:
+          proto: "{{ item.proto | default(omit) }}"
+          private_key: "{{ item.private_key | default(omit) }}"
+          addresses: "{{ item.addresses | default(omit) }}"
+          listen_port: "{{ item.listen_port | default(omit) }}"
+
+    # Configure new wireguard interface
+    - name: Configure new wireguard interface
+      when: >
+        item.private_key is undefined or
+        item.private_key | length == 0
+      block:
+        # Check current wireguard private key
+        - name: Check current wireguard private key
+          uci:
+            command: "get"
+            config: "network"
+            section: "{{ item.id }}.private_key"
+            type: "interface"
+          register: current_wireguard_private_key
+          failed_when: >
+            current_wireguard_private_key.result is undefined and
+            'Entry not found' not in current_wireguard_private_key.result
+
+        # Set current generated wireguard private key fact
+        - name: Set current wireguard private key fact
+          ansible.builtin.set_fact:
+            wireguard_private_key: "{{ current_wireguard_private_key.result }}"
+          when: >
+            (current_wireguard_private_key.result is defined and
+            current_wireguard_private_key.result | length > 0) and
+            'Entry not found' not in current_wireguard_private_key.result
+
+        # Generate wireguard private key
+        - name: Generate wireguard private key
+          ansible.builtin.command:
+            cmd: "umask go= && wg genkey"
+            uses_shell: true
+          register: new_wireguard_private_key
+          when: >
+            current_wireguard_private_key.result is undefined or
+            'Entry not found' in current_wireguard_private_key.result
+
+        # Set newely generated wireguard private key fact
+        - name: Set newely generated wireguard private key fact
+          ansible.builtin.set_fact:
+            wireguard_private_key: "{{ new_wireguard_private_key.stdout }}"
+          when: >
+            new_wireguard_private_key.stdout is defined and
+            new_wireguard_private_key.stdout | length > 0
+
+        # Configure wireguard interface
+        - name: Configure wireguard interface {{ item.id }}
+          uci:
+            command: "set"
+            config: "network"
+            section: "{{ item.id }}"
+            type: "interface"
+            value:
+              proto: "{{ item.proto | default(omit) }}"
+              private_key: "{{ wireguard_private_key }}"
+              addresses: "{{ item.addresses | default(omit) }}"
+              listen_port: "{{ item.listen_port | default(omit) }}"
+
+    # Configure wireguard peers
+    - name: Configure wireguard peers
+      ansible.builtin.include_tasks: peer.yml
+      vars:
+        wireguard_interface_name: "wireguard_{{ item.id }}"
+        wireguard_interface_addresses: "{{ item.addresses }}"
+      loop: "{{ item.peers | default([]) }}"
+      loop_control:
+        extended: true
+        loop_var: wgpeer

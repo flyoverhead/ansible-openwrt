@@ -1,0 +1,109 @@
+---
+# defaults section
+firewall_defaults:
+  input: ""
+  forward: ""
+  output: ""
+  drop_invalid: ""
+  synflood_protect: ""
+  synflood_rate: ""
+  synflood_burst: ""
+  flow_offloading: ""
+  flow_offloading_hw: ""
+
+# zones section
+firewall_zones:
+  - id: ""
+    name: ""
+    state: ""
+    network: []
+    masq: ""
+    mtu_fix: ""
+    input: ""
+    forward: ""
+    output: ""
+    family: ""
+    enabled: ""
+
+# forwardings section
+firewall_forwardings:
+  - id: ""
+    state: ""
+    src: ""
+    dest: ""
+    family: ""
+    ipset: ""
+    enabled: ""
+
+# rules section
+firewall_rules:
+  - id: ""
+    name: ""
+    desc: ""
+    state: ""
+    src: ""
+    src_ip: ""
+    src_port: []
+    src_mac: ""
+    dest: ""
+    dest_ip: ""
+    dest_port: []
+    target: ""
+    proto: []
+    family: ""
+    ipset: ""
+    mark: ""
+    set_mark: ""
+    enabled: ""
+
+# redirects section
+firewall_redirects:
+  - id: ""
+    name: ""
+    state: ""
+    src: ""
+    src_ip: ""
+    src_port: ""
+    src_mac: ""
+    src_dip: ""
+    src_dport: ""
+    dest: ""
+    dest_ip: ""
+    dest_port: ""
+    target: ""
+    proto: []
+    family: ""
+    ipset: ""
+    mark: ""
+    enabled: ""
+
+# ip sets section
+firewall_ipsets:
+  - id: ""
+    name: ""
+    state: ""
+    comment: ""
+    match: []
+    entry: []
+    family: ""
+    maxelem: ""
+    loadfile: ""
+    enabled: ""
+
+# nat section
+firewall_nats:
+  - id: ""
+    name: ""
+    state: ""
+    src: ""
+    src_ip: ""
+    src_port: ""
+    dest_ip: ""
+    dest_port: ""
+    snat_ip: ""
+    snat_port: ""
+    target: ""
+    proto: []
+    family: ""
+    mark: ""
+    enabled: ""

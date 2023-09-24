@@ -1,0 +1,18 @@
+---
+# system section
+dropbear:
+  enable: ""
+  verbose: ""
+  BannerFile: ""
+  PasswordAuth: ""
+  Port: ""
+  RootPasswordAuth: ""
+  RootLogin: ""
+  GatewayPorts: ""
+  Interface: ""
+  keyfile: ""
+  SSHKeepAlive: ""
+  IdleTimeout: ""
+  mdns: ""
+  MaxAuthTries: ""
+  RecvWindowSize: ""

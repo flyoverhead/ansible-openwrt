@@ -1,0 +1,64 @@
+---
+# Deafult B.A.T.M.A.N. status
+batman_enabled: false
+
+# Enable ath10k-ct drivers fix
+# https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support
+ath10k_ct_fix: false
+
+# Non-mesh wpad packages
+non_mesh_pkgs:
+  [
+    "wpad-mini",
+    "wpad-basic",
+    "wpad-basic-wolfssl",
+    "wpad-basic-openssl",
+    "wpad-basic-mbedtls",
+  ]
+
+# B.A.T.M.A.N. packages
+batman_pkgs: ["wpad-mesh-wolfssl", "kmod-batman-adv", "batctl-default"]
+
+# B.A.T.M.A.N. network interfaces
+batman_network_interfaces:
+  - id: ""
+    state: ""
+    proto: ""
+    aggregated_ogms: ""
+    routing_algo: ""
+    bonding: ""
+    fragmentation: ""
+    gw_mode: ""
+    gw_bandwidth: ""
+    gw_sel_class: ""
+    log_level: ""
+    orig_interval: ""
+    bridge_loop_avoidance: ""
+    distributed_arp_table: ""
+    multicast_mode: ""
+    multicast_fanout: ""
+    network_coding: ""
+    hop_penalty: ""
+    ap_isolation: ""
+    isolation_mark: ""
+    delegate: ""
+  - id: ""
+    state: ""
+    proto: ""
+    master: ""
+    mtu: ""
+    delegate: ""
+
+# B.A.T.M.A.N. wireless interfaces
+batman_wireless_interfaces:
+  - id: ""
+    name: ""
+    state: ""
+    device: ""
+    network: []
+    mode: ""
+    disabled: ""
+    mesh_id: ""
+    mesh_fwding: ""
+    encryption: ""
+    key: ""

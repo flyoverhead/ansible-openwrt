@@ -1,0 +1,41 @@
+---
+# Deafult mesh status
+mesh_enabled: false
+
+# Enable ath10k-ct drivers fix
+# https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support
+ath10k_ct_fix: false
+
+# Non-mesh wpad packages
+non_mesh_pkgs:
+  [
+    "wpad-mini",
+    "wpad-basic",
+    "wpad-basic-wolfssl",
+    "wpad-basic-openssl",
+    "wpad-basic-mbedtls",
+  ]
+
+# Mesh wpad packages
+mesh11sd_pkgs: ["wpad-mesh-wolfssl", "mesh11sd"]
+
+# Mesh interface configuration
+mesh11sd_interfaces:
+  - id: ""
+    name: ""
+    state: ""
+    device: ""
+    network: []
+    mode: ""
+    disabled: ""
+    mesh_id: ""
+    encryption: ""
+    key: ""
+
+# Mesh interface additional settings
+mesh11sd_settings:
+  mesh_fwding: ""
+  mesh_rssi_threshold: ""
+  mesh_gate_announcements: ""
+  mesh_hwmp_rootmode: ""
+  mesh_max_peer_links: ""

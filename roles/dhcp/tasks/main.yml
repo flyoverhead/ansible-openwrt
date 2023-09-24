@@ -1,0 +1,20 @@
+---
+# Configure dnsmasq section
+- name: Configure dnsmasq section
+  ansible.builtin.include_tasks: dnsmasq.yml
+
+# Configure dhcp section
+- name: Configure dhcp section
+  ansible.builtin.include_tasks: dhcp.yml
+  loop: "{{ dhcp_pools | default([]) }}"
+
+# Configure host section
+- name: Configure host section
+  ansible.builtin.include_tasks: host.yml
+  loop: "{{ dhcp_leases | default([]) }}"
+
+# Apply changes and reload DHCP service
+- name: Apply changes and reload dhcp
+  uci:
+    command: commit
+  notify: Reload dhcp

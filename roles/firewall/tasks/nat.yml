@@ -1,0 +1,48 @@
+---
+# Set state status for firewall nat
+- name: Set state status for firewall nat {{ item.id | default('@nat[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_nat_state: "{{ item.state | default('present') }}"
+
+# Delete firewall nat
+- name: Delete firewall nat {{ item.id }}
+  when: "'absent' in firewall_nat_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "nat"
+
+# Create and configure firewall nat
+- name: Create and configure firewall nat
+  when: "'present' in firewall_nat_state"
+  block:
+    # Create firewall nat
+    - name: Create firewall nat {{ item.id | default('@nat[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@nat[-1]') }}"
+        type: "nat"
+
+    # Configure firewall nat
+    - name: Configure firewall nat {{ item.id | default('@nat[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@nat[-1]') }}"
+        type: "nat"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          src: "{{ item.src | default(omit) }}"
+          src_ip: "{{ item.src_ip | default(omit) }}"
+          src_port: "{{ item.src_port | default(omit) }}"
+          dest_ip: "{{ item.dest_ip | default(omit) }}"
+          dest_port: "{{ item.dest_port | default(omit) }}"
+          snat_ip: "{{ item.snat_ip | default(omit) }}"
+          snat_port: "{{ item.snat_port | default(omit) }}"
+          target: "{{ item.target | default(omit) }}"
+          proto: "{{ item.proto | default([]) | join(' ') }}"
+          family: "{{ item.family | default(omit) }}"
+          mark: "{{ item.mark | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

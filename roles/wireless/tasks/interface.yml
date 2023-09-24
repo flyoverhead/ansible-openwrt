@@ -1,0 +1,62 @@
+---
+# Set state status for wireless interface
+- name: Set state status for wireless interface {{ item.id }}
+  ansible.builtin.set_fact:
+    wireless_interface_state: "{{ item.state | default('present') }}"
+
+# Delete wireless interface
+- name: Delete wireless interface {{ item.id }}
+  when: "'absent' in wireless_interface_state"
+  uci:
+    command: "absent"
+    config: "wireless"
+    section: "{{ item.id }}"
+    type: "wifi-iface"
+
+# Create and configure wireless interface
+- name: Create and configure wireless interface
+  when: "'present' in wireless_interface_state"
+  block:
+    # Create wireless interface
+    - name: Create wireless interface {{ item.id }}
+      uci:
+        command: "add"
+        config: "wireless"
+        section: "{{ item.id }}"
+        type: "wifi-iface"
+
+    # Generate mobility domain identifier
+    - name: Generate mobility domain identifier
+      ansible.builtin.command:
+        cmd: "echo -n {{ item.ssid }} | md5sum | cut -c-4"
+        uses_shell: true
+      register: mobility_domain_identifier
+      when: >
+        (mobility_domain is defined and mobility_domain == 1) and
+        (item.ssid is defined and item.ssid | length > 0)
+
+    # Configure wireless interface
+    - name: Configure wireless interface {{ item.id }}
+      uci:
+        command: "set"
+        config: "wireless"
+        section: "{{ item.id }}"
+        type: "wifi-iface"
+        value:
+          ifname: "{{ item.name | default(omit) }}"
+          device: "{{ item.device | default(omit) }}"
+          network: "{{ item.network | default([]) | join(' ') }}"
+          mode: "{{ item.mode | default(omit) }}"
+          disabled: "{{ item.disabled | default(omit) }}"
+          ssid: "{{ item.ssid | default(omit) }}"
+          mesh_id: "{{ item.mesh_id | default(omit) }}"
+          hidden: "{{ item.hidden | default(omit) }}"
+          isolate: "{{ item.isolate | default(omit) }}"
+          encryption: "{{ item.encryption | default(omit) }}"
+          key: "{{ item.key | default(omit) }}"
+          macfilter: "{{ item.macfilter | default(omit) }}"
+          maclist: "{{ item.maclist | default([]) | join(' ') }}"
+          ieee80211r: "{{ item.ieee80211r | default(omit) }}"
+          mobility_domain: "{{ mobility_domain_identifier.stdout | default(omit) }}"
+          ft_over_ds: "{{ item.ft_over_ds | default(omit) }}"
+          ft_psk_generate_local: "{{ item.ft_psk_generate_local | default(omit) }}"

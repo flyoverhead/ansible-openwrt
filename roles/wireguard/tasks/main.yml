@@ -1,0 +1,23 @@
+---
+# Install required packages
+- name: Install required packages
+  ansible.builtin.include_tasks: prepare.yml
+
+# Configure wireguard interfaces
+- name: Configure wireguard interfaces
+  ansible.builtin.include_tasks: server.yml
+  loop: "{{ wireguard_interfaces | default([]) }}"
+
+# Configure wireguard peers
+- name: Configure wireguard peers
+  ansible.builtin.include_tasks: peer.yml
+  loop: "{{ wireguard_peers | default([]) }}"
+  loop_control:
+    loop_var: wgpeer
+    label: "{{ wgpeer }}"
+
+# Apply changes and reload network service
+- name: Apply changes and reload network
+  uci:
+    command: commit
+  notify: Reload network

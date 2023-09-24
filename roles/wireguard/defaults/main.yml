@@ -1,0 +1,28 @@
+---
+# Wireguard packages
+wireguard_pkgs:
+  ["wireguard-tools", "luci-proto-wireguard", "luci-app-wireguard", "qrencode"]
+
+# Wireguard servers
+wireguard_interfaces:
+  - id: ""
+    state: ""
+    proto: ""
+    private_key: ""
+    addresses: ""
+    listen_port: ""
+    peers: []
+
+# Wireguard peers
+wireguard_peers:
+  - id: ""
+    name: ""
+    state: ""
+    public_key: ""
+    preshared_key: ""
+    endpoint_host: ""
+    endpoint_port: ""
+    route_allowed_ips: ""
+    persistent_keepalive: ""
+    allowed_ips: []
+    wireguard_interface_name: ""

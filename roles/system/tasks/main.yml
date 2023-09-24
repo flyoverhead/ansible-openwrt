@@ -1,0 +1,17 @@
+---
+# Configure system section
+- name: Configure system section
+  ansible.builtin.include_tasks: system.yml
+
+# Apply changes and reload system service
+- name: Apply changes and reload system
+  block:
+    # Commit changes
+    - name: Commit changes
+      uci:
+        command: commit
+      notify: Reload system
+
+    # Reload system service
+    - name: Reload system service
+      ansible.builtin.meta: flush_handlers

@@ -1,0 +1,11 @@
+---
+# Configure globals settings
+- name: Configure globals settings
+  uci:
+    command: "set"
+    config: "network"
+    section: "globals"
+    type: "globals"
+    value:
+      ula_prefix: "{{ network_globals.network_ula_prefix | default(omit) }}"
+      packet_steering: "{{ network_globals.network_packet_steering | default(omit) }}"

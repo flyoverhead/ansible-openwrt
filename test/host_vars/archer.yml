@@ -1,0 +1,26 @@
+# Device subnet
+device_ip_address: "192.168.1.1"
+device_dhcp_start: "50"
+
+# Device LAN bridge port
+device_bridge_port: "eth0.1"
+
+# Device WIFI radios
+device_5g_radio: "radio1"
+device_2g_radio: "radio0"
+
+# Wireguard Home port
+wireguard_home_port: "51820"
+
+# Wireguard VPS address
+wireguard_vps_address: "10.0.0.2"
+
+# Enable extroot
+extroot_enabled: true
+
+# Configure system settings
+system:
+  hostname: "archer"
+  description: "TP-Link Archer C7 AC1750"
+  timezone: "UTC"
+  zonename: "UTC"

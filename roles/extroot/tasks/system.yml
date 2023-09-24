@@ -1,0 +1,55 @@
+---
+# Copy overlay partition content to external USB device
+- name: Copy overlay content to external usb device
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    uses_shell: true
+  loop:
+    [
+      "mount /dev/{{ extroot_device }}1 /mnt",
+      "tar -C /overlay -cvf - . | tar -C /mnt -xf -",
+      "umount /mnt",
+    ]
+  loop_control:
+    label: "{{ item }}"
+
+# Configure hotplug extras
+- name: Configure hotplug extras
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "/tmp"
+  loop:
+    [
+      'uclient-fetch -O hotplug-extras.sh "https://openwrt.org/_export/code/docs/guide-user/advanced/hotplug_extras?codeblock=0"',
+      "chmod +x ./hotplug-extras.sh",
+      ./hotplug-extras.sh,
+    ]
+
+# Configure opkg extras
+- name: Configure opkg extras
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "/tmp"
+  loop:
+    [
+      'uclient-fetch -O opkg-extras.sh "https://openwrt.org/_export/code/docs/guide-user/advanced/opkg_extras?codeblock=0"',
+      "chmod +x ./opkg-extras.sh",
+      ./opkg-extras.sh,
+    ]
+
+# Configure extroot auto restore
+- name: Configure extroot auto restore
+  ansible.builtin.copy:
+    src: "90-extroot-restore"
+    dest: "/etc/uci-defaults/90-extroot-restore"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+# Add auto restore to sysupgrade configuration
+- name: Add auto restore to sysupgrade.conf
+  ansible.builtin.lineinfile:
+    path: "/etc/sysupgrade.conf"
+    line: "/etc/uci-defaults"
+    insertafter: "EOF"
+    state: "present"

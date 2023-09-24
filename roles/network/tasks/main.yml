@@ -1,0 +1,30 @@
+---
+# Configure globals section
+- name: Configure globals section
+  ansible.builtin.include_tasks: globals.yml
+
+# Configure device section
+- name: Configure device section
+  ansible.builtin.include_tasks: device.yml
+  loop: "{{ network_devices | default([]) }}"
+
+# Configure interface section
+- name: Configure interface section
+  ansible.builtin.include_tasks: interface.yml
+  loop: "{{ network_interfaces | default([]) }}"
+
+# Configure rule section
+- name: Configure rule section
+  ansible.builtin.include_tasks: rule.yml
+  loop: "{{ network_rules | default([]) }}"
+
+# Configure route section
+- name: Configure route section
+  ansible.builtin.include_tasks: route.yml
+  loop: "{{ network_routes | default([]) }}"
+
+# Apply changes and reload network service
+- name: Apply changes and reload network
+  uci:
+    command: commit
+  notify: Reload network

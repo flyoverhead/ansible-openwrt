@@ -1,0 +1,40 @@
+---
+# Configure deaults section
+- name: Configure defaults section
+  ansible.builtin.include_tasks: defaults.yml
+
+# Configure zone section
+- name: Configure zone section
+  ansible.builtin.include_tasks: zone.yml
+  loop: "{{ firewall_zones | default([]) }}"
+
+# Configure forwarding section
+- name: Configure forwarding section
+  ansible.builtin.include_tasks: forwarding.yml
+  loop: "{{ firewall_forwardings | default([]) }}"
+
+# Configure rule section
+- name: Configure rule section
+  ansible.builtin.include_tasks: rule.yml
+  loop: "{{ firewall_rules | default([]) }}"
+
+# Configure redirect section
+- name: Configure redirect section
+  ansible.builtin.include_tasks: redirect.yml
+  loop: "{{ firewall_redirects | default([]) }}"
+
+# Configure ipset section
+- name: Configure ipset section
+  ansible.builtin.include_tasks: ipset.yml
+  loop: "{{ firewall_ipsets | default([]) }}"
+
+# Configure nat section
+- name: Configure nat section
+  ansible.builtin.include_tasks: nat.yml
+  loop: "{{ firewall_nats | default([]) }}"
+
+# Apply changes and reload firewall service
+- name: Apply changes and reload firewall
+  uci:
+    command: commit
+  notify: Reload firewall

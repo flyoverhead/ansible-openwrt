@@ -1,0 +1,51 @@
+---
+# dnsmasq section
+dhcp_common:
+  authoritative: ""
+  boguspriv: ""
+  cachesize: ""
+  domain: ""
+  domainneeded: ""
+  dnssec: ""
+  dnsseccheckunsigned: ""
+  expandhosts: ""
+  filterwin2k: ""
+  fqdn: ""
+  leasefile: ""
+  local: ""
+  localise_queries: ""
+  localservice: ""
+  nonegcache: ""
+  nonwildcard: ""
+  readethers: ""
+  rebind_protection: ""
+  rebind_localhost: ""
+  rebind_domain: []
+  resolvfile: ""
+  server: []
+  serverlist: ""
+  address: []
+  allservers: ""
+
+# dhcp section
+dhcp_pools:
+  - id: ""
+    interface: ""
+    state: ""
+    dhcp_option: []
+    force: ""
+    dhcpv4: ""
+    leasetime: ""
+    limit: ""
+    start: ""
+    ra: ""
+    dhcpv6: ""
+    dns_service: ""
+
+# host section
+dhcp_leases:
+  - id: ""
+    name: ""
+    state: ""
+    ip: ""
+    mac: ""

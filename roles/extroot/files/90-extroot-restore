@@ -1,0 +1,19 @@
+if uci -q get fstab.overlay > /dev/null \
+&& [ ! -e /etc/extroot-restore ] \
+&& lock -n /var/lock/extroot-restore \
+&& [ -e /etc/opkg-restore-init ]
+then
+UUID="$(uci -q get fstab.overlay.uuid)"
+OVRL="$(block info | sed -n -e "/${UUID}/s/:.*$//p")"
+mount "${OVRL}" /mnt
+BAK="$(mktemp -d -p /mnt -t bak.XXXXXX)"
+mv -f /mnt/etc /mnt/upper "${BAK}"
+touch /etc/extroot-restore
+if grep -q -e "\s/overlay\s" /etc/mtab
+then cp -f -a /overlay/. /mnt
+fi
+umount "${OVRL}"
+lock -u /var/lock/extroot-restore
+reboot
+fi
+exit 1

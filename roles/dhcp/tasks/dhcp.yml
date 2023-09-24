@@ -1,0 +1,45 @@
+---
+# Set state status for dhcp pool
+- name: Set state status for dhcp pool {{ item.id | default(item.interface) }}
+  ansible.builtin.set_fact:
+    dhcp_state: "{{ item.state | default('present') }}"
+
+# Delete dhcp pool for interface
+- name: Delete dhcp pool for interface {{ item.id | default(item.interface) }}
+  when: "'absent' in dhcp_state"
+  uci:
+    command: "absent"
+    config: "dhcp"
+    section: "{{ item.id | default(item.interface) }}"
+    type: "dhcp"
+
+# Create and configure dhcp pool for interface
+- name: Create and configure dhcp pool for interface
+  when: "'present' in dhcp_state"
+  block:
+    # Create dhcp pool for interface
+    - name: Create dhcp pool for interface {{ item.id | default(item.interface) }}
+      uci:
+        command: "add"
+        config: "dhcp"
+        section: "{{ item.id | default(item.interface) }}"
+        type: "dhcp"
+
+    # Configure dhcp pool
+    - name: Configure dhcp pool for {{ item.id | default(item.interface) }}
+      uci:
+        command: "set"
+        config: "dhcp"
+        section: "{{ item.id | default(item.interface) }}"
+        type: "dhcp"
+        value:
+          interface: "{{ item.interface | default(omit) }}"
+          dhcp_option: "{{ item.dhcp_option | default([]) | join(' ') }}"
+          force: "{{ item.force | default(omit) }}"
+          dhcpv4: "{{ item.dhcpv4 | default(omit) }}"
+          leasetime: "{{ item.leasetime | default(omit) }}"
+          limit: "{{ item.limit | default(omit) }}"
+          start: "{{ item.start | default(omit) }}"
+          ra: "{{ item.ra | default(omit) }}"
+          dhcpv6: "{{ item.dhcpv6 | default(omit) }}"
+          dns_service: "{{ item.dns_service | default(omit) }}"

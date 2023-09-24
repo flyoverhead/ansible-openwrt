@@ -1,0 +1,128 @@
+---
+# Configure user-defined wireguard peer
+- name: Configure user-defined wireguard peer
+  when: wgpeer is defined and wgpeer | type_debug == "dict"
+  block:
+    # Set state status for wireguard peer
+    - name: Set state status for wireguard peer {{ wgpeer.id }}
+      ansible.builtin.set_fact:
+        wireguard_peer_state: "{{ wgpeer.state | default('present') }}"
+
+    # Delete wireguard peer
+    - name: Delete wireguard peer {{ wgpeer.id }}
+      when: "'absent' in wireguard_peer_state"
+      uci:
+        command: "absent"
+        config: "network"
+        section: "{{ wgpeer.id }}"
+        type: "wireguard_{{ wgpeer.wireguard_interface_name }}"
+
+    # Create and configure wireguard peer
+    - name: Create and configure wireguard peer
+      when: "'present' in wireguard_peer_state"
+      block:
+        # Create wireguard peer
+        - name: Create wireguard peer {{ wgpeer.id }}
+          uci:
+            command: "add"
+            config: "network"
+            section: "{{ wgpeer.id }}"
+            type: "wireguard_{{ wgpeer.wireguard_interface_name }}"
+
+        # Configure wireguard peer
+        - name: Configure wireguard peer {{ wgpeer.id }}
+          uci:
+            command: "set"
+            config: "network"
+            section: "{{ wgpeer.id }}"
+            type: "wireguard_{{ wgpeer.wireguard_interface_name }}"
+            value:
+              description: "{{ wgpeer.name | default(omit) }}"
+              public_key: "{{ wgpeer.public_key | default(omit) }}"
+              preshared_key: "{{ wgpeer.preshared_key | default(omit) }}"
+              endpoint_host: "{{ wgpeer.endpoint_host | default(omit) }}"
+              endpoint_port: "{{ wgpeer.endpoint_port | default(omit) }}"
+              route_allowed_ips: "{{ wgpeer.route_allowed_ips | default(omit) }}"
+              persistent_keepalive: "{{ wgpeer.persistent_keepalive | default(omit) }}"
+              allowed_ips: "{{ wgpeer.allowed_ips | default([]) | join(' ') }}"
+
+# Generate wireguard peer
+- name: Generate wireguard peer
+  when: wgpeer is defined and wgpeer | type_debug == "str"
+  block:
+    # Create wireguard peer
+    - name: Create wireguard peer {{ wgpeer }}
+      uci:
+        command: "add"
+        config: "network"
+        section: "{{ wgpeer }}"
+        type: "{{ wireguard_interface_name }}"
+
+    # Check current wireguard private key
+    - name: Check current wireguard private key
+      uci:
+        command: "get"
+        config: "network"
+        section: "{{ wgpeer }}.private_key"
+        type: "{{ wireguard_interface_name }}"
+      register: current_wireguard_private_key
+      failed_when: >
+        current_wireguard_private_key.result is undefined and
+        'Entry not found' not in current_wireguard_private_key.result
+
+    # Set current generated wireguard private key fact
+    - name: Set current wireguard private key fact
+      ansible.builtin.set_fact:
+        wireguard_private_key: "{{ current_wireguard_private_key.result }}"
+      when: >
+        (current_wireguard_private_key.result is defined and
+        current_wireguard_private_key.result | length > 0) and
+        'Entry not found' not in current_wireguard_private_key.result
+
+    # Generate wireguard key pair
+    - name: Generate wireguard key pair
+      when: >
+        current_wireguard_private_key.result is undefined or
+        'Entry not found' in current_wireguard_private_key.result
+      block:
+        # Generate wireguard private key
+        - name: Generate wireguard private key
+          ansible.builtin.command:
+            cmd: "umask go= && wg genkey"
+            uses_shell: true
+          register: new_wireguard_private_key
+
+        # Set newely generated wireguard private key fact
+        - name: Set newely generated wireguard private key fact
+          ansible.builtin.set_fact:
+            wireguard_private_key: "{{ new_wireguard_private_key.stdout }}"
+
+        # Generate wireguard public key
+        - name: Generate wireguard public key
+          ansible.builtin.command:
+            cmd: 'umask go= && echo "{{ wireguard_private_key }}" | wg pubkey'
+            uses_shell: true
+          register: wireguard_public_key
+
+        # Generate wireguard preshared key
+        - name: Generate wireguard preshared key
+          ansible.builtin.command:
+            cmd: "umask go= && wg genpsk"
+            uses_shell: true
+          register: wireguard_preshared_key
+
+    # Configure wireguard peer
+    - name: Configure wireguard peer {{ wgpeer }}
+      uci:
+        command: "set"
+        config: "network"
+        section: "{{ wgpeer }}"
+        type: "{{ wireguard_interface_name }}"
+        value:
+          description: "{{ wgpeer }}"
+          private_key: "{{ wireguard_private_key | default(omit) }}"
+          public_key: "{{ wireguard_public_key.stdout | default(omit) }}"
+          preshared_key: "{{ wireguard_preshared_key.stdout | default(omit) }}"
+          route_allowed_ips: "1"
+          persistent_keepalive: "25"
+          allowed_ips: "{{ wireguard_interface_addresses | ansible.utils.ipmath(ansible_loop.index) }}"

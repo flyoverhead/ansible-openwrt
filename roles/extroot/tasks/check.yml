@@ -1,0 +1,24 @@
+---
+# Set extroot status to false
+# to prevent permanent configuration
+- name: Set default extroot status fact to false
+  ansible.builtin.set_fact:
+    extroot_configure: false
+
+# Check current extroot status
+- name: Check current extroot status
+  uci:
+    command: "get"
+    config: "fstab"
+    section: "@mount[0].target"
+    type: "mount"
+  register: extroot_status
+  failed_when: >
+    extroot_status.result is undefined and
+    'Entry not found' not in extroot_status.result
+
+# Set extroot status fact
+- name: Set extroot status fact
+  ansible.builtin.set_fact:
+    extroot_configure: true
+  when: extroot_device not in extroot_status.result

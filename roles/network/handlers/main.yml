@@ -1,0 +1,6 @@
+---
+# Reload network service
+- name: Reload network
+  ansible.builtin.service:
+    name: network
+    state: reloaded

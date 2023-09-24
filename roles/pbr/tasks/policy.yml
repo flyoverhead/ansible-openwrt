@@ -1,0 +1,44 @@
+---
+# Set state status for policy
+- name: Set state status for policy {{ item.id | default('@policy[-1]') }}
+  ansible.builtin.set_fact:
+    policy_state: "{{ item.state | default('present') }}"
+
+# Delete policy
+- name: Delete policy {{ item.id }}
+  when: "'absent' in policy_state"
+  uci:
+    command: "absent"
+    config: "pbr"
+    section: "{{ item.id | default('@policy[-1]') }}"
+    type: "policy"
+
+# Create and configure policy
+- name: Create and configure policy
+  when: "'present' in policy_state"
+  block:
+    # Create policy
+    - name: Create policy {{ item.id | default('@policy[-1]') }}
+      uci:
+        command: "add"
+        config: "pbr"
+        section: "{{ item.id | default('@policy[-1]') }}"
+        type: "policy"
+
+    # Configure policy
+    - name: Configure policy {{ item.id | default('@policy[-1]') }}
+      uci:
+        command: "set"
+        config: "pbr"
+        section: "{{ item.id | default('@policy[-1]') }}"
+        type: "policy"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"
+          interface: "{{ item.interface | default(omit) }}"
+          src_addr: "{{ item.src_addr | default([]) | join(' ') }}"
+          src_port: "{{ item.src_port | default([]) | join(' ') }}"
+          dest_addr: "{{ item.dest_addr | default([]) | join(' ') }}"
+          dest_port: "{{ item.dest_port | default([]) | join(' ') }}"
+          proto: "{{ item.proto | default(omit) }}"
+          chain: "{{ item.chain | default(omit) }}"

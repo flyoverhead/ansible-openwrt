@@ -1,0 +1,88 @@
+---
+# Update opkg cache
+- name: Update opkg cache
+  ansible.builtin.command:
+    cmd: "opkg update"
+  changed_when: false
+
+# Install pbr packages
+- name: Install pbr packages
+  opkg:
+    name: "{{ item }}"
+    state: "present"
+  loop: "{{ pbr_pkgs }}"
+
+# Check dnsmasq-full installed version
+- name: Check dnsmasq-full installed version
+  ansible.builtin.command:
+    cmd: "opkg list-installed | grep dnsmasq-full | awk '{print $3}'"
+    uses_shell: true
+  register: dnsmasq_full_installed_version
+  changed_when: false
+
+# Check dnsmasq-full release version
+- name: Check dnsmasq-full release version
+  ansible.builtin.command:
+    cmd: "opkg find dnsmasq-full | awk '{print $3}'"
+    uses_shell: true
+  register: dnsmasq_full_release_version
+  changed_when: false
+
+# Install dnsmasq-full release version
+- name: Install dnsmasq-full release version
+  when: >
+    (dnsmasq_full_installed_version.stdout is undefined or
+    dnsmasq_full_installed_version.stdout < dnsmasq_full_required_version) and
+    dnsmasq_full_release_version.stdout >= dnsmasq_full_required_version
+  block:
+    # Remove dnsmasq-base packages
+    - name: Remove dnsmasq-base package
+      opkg:
+        name: "{{ item }}"
+        state: "absent"
+      loop: ["dnsmasq", "dnsmasq-full"]
+
+    # Install dnsmasq-full release version
+    - name: Install dnsmasq-full release version
+      opkg:
+        name: "dnsmasq-full"
+        state: "present"
+
+# Install dnsmasq-full snapshot version
+- name: Install dnsmasq-full snapshot version
+  when: >
+    (dnsmasq_full_installed_version.stdout is undefined or
+    dnsmasq_full_installed_version.stdout < dnsmasq_full_required_version) and
+    dnsmasq_full_release_version.stdout < dnsmasq_full_required_version
+  block:
+    # Remove current dnsmasq-base packages
+    - name: Remove current dnsmasq packages
+      opkg:
+        name: "{{ item }}"
+        state: "absent"
+      loop: ["dnsmasq", "dnsmasq-full"]
+
+    # Install curl for package downloading
+    - name: Install curl
+      opkg:
+        name: "curl"
+        state: "present"
+
+    # Get current package architecture
+    - name: Get current package architecture
+      ansible.builtin.command:
+        cmd: "opkg print-architecture | tail -n 1 | awk '{print $2}'"
+        uses_shell: true
+      register: current_package_architecture
+      changed_when: false
+
+    # Set snapshot packages facts
+    - name: Set snapshot packages facts
+      ansible.builtin.set_fact:
+        snapshot_repo_url: "https://downloads.openwrt.org/snapshots/packages/{{ current_package_architecture.stdout }}/base/"
+        snapshot_pkgs_list: ["libubox[0-9]", "libubus[0-9]", "dnsmasq-full"]
+
+    # Download and install snapshot packages
+    - name: Download and install snapshot packages
+      ansible.builtin.include_tasks: snapshot.yml
+      loop: "{{ snapshot_pkgs_list }}"

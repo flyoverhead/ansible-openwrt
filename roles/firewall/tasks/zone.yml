@@ -1,0 +1,44 @@
+---
+# Set state status for firewall zone
+- name: Set state status for firewall zone {{ item.id | default('@zone[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_zone_state: "{{ item.state | default('present') }}"
+
+# Delete firewall zone
+- name: Delete firewall zone {{ item.id }}
+  when: "'absent' in firewall_zone_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "zone"
+
+# Create and configure firewall zone
+- name: Create and configure firewall zone
+  when: "'present' in firewall_zone_state"
+  block:
+    # Create firewall zone
+    - name: Create firewall zone {{ item.id | default('@zone[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@zone[-1]') }}"
+        type: "zone"
+
+    # Configure firewall zone
+    - name: Configure firewall zone {{ item.id | default('@zone[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@zone[-1]') }}"
+        type: "zone"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          network: "{{ item.network | default([]) | join(' ') }}"
+          masq: "{{ item.masq | default(omit) }}"
+          mtu_fix: "{{ item.mtu_fix | default(omit) }}"
+          input: "{{ item.input | default(omit) }}"
+          forward: "{{ item.forward | default(omit) }}"
+          output: "{{ item.output | default(omit) }}"
+          family: "{{ item.family | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

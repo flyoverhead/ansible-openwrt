@@ -1,0 +1,11 @@
+namespace: "flyoverhead"
+name: "openwrt"
+version: 1.0.0
+readme: README.md
+authors: ["flyoverhead"]
+description: Ansible collection for OpenWrt configuration
+license: ["GPL-3.0-only"]
+tags: ["openwrt", "configuration"]
+dependencies: {}
+repository: https://github.com/flyoverhead/ansible-openwrt
+issues: https://github.com/flyoverhead/ansible-openwrt/issues

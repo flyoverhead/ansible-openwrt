@@ -1,0 +1,8 @@
+---
+# Reload wireless service
+- name: Reload wireless
+  ansible.builtin.command:
+    cmd: "/sbin/wifi {{ item }}"
+  register: reload_wifi_status
+  changed_when: reload_wifi_status != 0
+  loop: ["config", "reload"]

@@ -1,0 +1,51 @@
+---
+# Set state status for firewall redirect
+- name: Set state status for firewall redirect {{ item.id | default('@redirect[-1]') }}
+  ansible.builtin.set_fact:
+    firewall_redirect_state: "{{ item.state | default('present') }}"
+
+# Delete firewall redirect
+- name: Delete firewall redirect {{ item.id }}
+  when: "'absent' in firewall_redirect_state"
+  uci:
+    command: "absent"
+    config: "firewall"
+    section: "{{ item.id }}"
+    type: "redirect"
+
+# Create and configure firewall redirect
+- name: Create and configure firewall redirect
+  when: "'present' in firewall_redirect_state"
+  block:
+    # Create firewall redirect
+    - name: Create firewall redirect {{ item.id | default('@redirect[-1]') }}
+      uci:
+        command: "add"
+        config: "firewall"
+        section: "{{ item.id | default('@redirect[-1]') }}"
+        type: "redirect"
+
+    # Configure firewall redirect
+    - name: Configure firewall redirect {{ item.id | default('@redirect[-1]') }}
+      uci:
+        command: "set"
+        config: "firewall"
+        section: "{{ item.id | default('@redirect[-1]') }}"
+        type: "redirect"
+        value:
+          name: "{{ item.name | default(omit) }}"
+          src: "{{ item.src | default(omit) }}"
+          src_ip: "{{ item.src_ip | default(omit) }}"
+          src_port: "{{ item.src_port | default(omit) }}"
+          src_mac: "{{ item.src_mac | default(omit) }}"
+          src_dip: "{{ item.src_dip | default(omit) }}"
+          src_dport: "{{ item.src_dport | default(omit) }}"
+          dest: "{{ item.dest | default(omit) }}"
+          dest_ip: "{{ item.dest_ip | default(omit) }}"
+          dest_port: "{{ item.dest_port | default(omit) }}"
+          target: "{{ item.target | default(omit) }}"
+          proto: "{{ item.proto | default([]) | join(' ') }}"
+          family: "{{ item.family | default(omit) }}"
+          ipset: "{{ item.ipset | default(omit) }}"
+          mark: "{{ item.mark | default(omit) }}"
+          enabled: "{{ item.enabled | default(omit) }}"

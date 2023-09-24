@@ -1,0 +1,14 @@
+---
+# Configure mesh parameters
+- name: Configure mesh parameters
+  uci:
+    command: "set"
+    config: "mesh11sd"
+    section: "mesh_params"
+    type: "mesh11sd"
+    value:
+      mesh_fwding: "{{ mesh11sd_settings.mesh_fwding | default(omit) }}"
+      mesh_rssi_threshold: "{{ mesh11sd_settings.mesh_rssi_threshold | default(omit) }}"
+      mesh_gate_announcements: "{{ mesh11sd_settings.mesh_gate_announcements | default(omit) }}"
+      mesh_hwmp_rootmode: "{{ mesh11sd_settings.mesh_hwmp_rootmode | default(omit) }}"
+      mesh_max_peer_links: "{{ mesh11sd_settings.mesh_max_peer_links | default(omit) }}"

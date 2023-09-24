@@ -1,0 +1,24 @@
+---
+# Configure dropbear settings
+- name: Configure dropbear settings
+  uci:
+    command: "set"
+    config: "dropbear"
+    section: "@dropbear[0]"
+    type: "dropbear"
+    value:
+      enable: "{{ dropbear.enable | default(omit) }}"
+      verbose: "{{ dropbear.verbose | default(omit) }}"
+      BannerFile: "{{ dropbear.BannerFile | default(omit) }}"
+      PasswordAuth: "{{ dropbear.PasswordAuth | default(omit) }}"
+      Port: "{{ dropbear.Port | default(omit) }}"
+      RootPasswordAuth: "{{ dropbear.RootPasswordAuth | default(omit) }}"
+      RootLogin: "{{ dropbear.RootLogin | default(omit) }}"
+      GatewayPorts: "{{ dropbear.GatewayPorts | default(omit) }}"
+      Interface: "{{ dropbear.Interface | default(omit) }}"
+      keyfile: "{{ dropbear.keyfile | default(omit) }}"
+      SSHKeepAlive: "{{ dropbear.SSHKeepAlive | default(omit) }}"
+      IdleTimeout: "{{ dropbear.IdleTimeout | default(omit) }}"
+      mdns: "{{ dropbear.mdns | default(omit) }}"
+      MaxAuthTries: "{{ dropbear.MaxAuthTries | default(omit) }}"
+      RecvWindowSize: "{{ dropbear.RecvWindowSize | default(omit) }}"

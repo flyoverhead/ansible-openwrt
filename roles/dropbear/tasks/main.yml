@@ -1,0 +1,20 @@
+---
+# Configure dropbear section
+- name: Configure dropbear section
+  ansible.builtin.include_tasks: dropbear.yml
+
+# Copy SSH authorized keys
+- name: Copy ssh authorized keys
+  ansible.builtin.copy:
+    src: "authorized_keys"
+    dest: "/etc/dropbear/authorized_keys"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+    force: true
+
+# Apply changes and reload dropbear service
+- name: Apply changes and reload dropbear
+  uci:
+    command: commit
+  notify: Reload dropbear

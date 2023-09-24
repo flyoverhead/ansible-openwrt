@@ -1,0 +1,13 @@
+---
+# Update opkg cache
+- name: Update opkg cache
+  ansible.builtin.command:
+    cmd: "opkg update"
+  changed_when: false
+
+# Install wireguard packages
+- name: Install wireguard packages
+  opkg:
+    name: "{{ item }}"
+    state: "present"
+  loop: "{{ wireguard_pkgs }}"

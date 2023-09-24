@@ -1,0 +1,26 @@
+# Device subnet
+device_ip_address: "192.168.1.2"
+device_dhcp_start: "100"
+
+# Device LAN bridge port
+device_bridge_port: "eth0"
+
+# Device WIFI radios
+device_5g_radio: "radio1"
+device_2g_radio: "radio0"
+
+# Wireguard Home port
+wireguard_home_port: "51821"
+
+# Wireguard VPS address
+wireguard_vps_address: "10.0.0.3"
+
+# Enable extroot
+extroot_enabled: true
+
+# Configure system settings
+system:
+  hostname: "mikrotik"
+  description: "MikroTik hAP ac2"
+  timezone: "UTC"
+  zonename: "UTC"
