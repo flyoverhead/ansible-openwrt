@@ -2,8 +2,6 @@
 
 Ansible collection for automative configuration of OpenWrt devices (without Python).
 
----
-
 ## Compatibilities
 
 This collection was tested on
@@ -143,7 +141,7 @@ system:
 
 <details>
   <summary>mikrotik.yml</summary>
-
+  
 ```yaml
 # Device subnet
 device_ip_address: "192.168.1.2"
@@ -183,6 +181,12 @@ system:
 # Configure WIFI
 wifi_password: "passowrd"
 
+# Configure Wireguard VPS
+wireguard_server_public_key: "public_key"
+wireguard_server_preshared_key: "preshared_key"
+wireguard_server_address: "address"
+wireguard_server_port: "port"
+
 # Configure network devices
 network_devices:
   - id: "@device[0]"
@@ -221,7 +225,7 @@ network_interfaces:
     auto: "1"
     force_link: "1"
     peerdns: "0"
-    dns: ["192.168.1.2", "192.168.1.3"]
+    dns: ["1.1.1.1", "9.9.9.9"]
     ipv6: "0"
     delegate: "0"
   - id: "iot"
@@ -400,7 +404,7 @@ wireguard_peers:
     name: "VPS"
     state: "present"
     public_key: "{{ wireguard_server_public_key }}"
-    preshared_key: "your_preshared_key"
+    preshared_key: "{{ wireguard_server_preshared_key }}"
     endpoint_host: "{{ wireguard_server_address }}"
     endpoint_port: "{{ wireguard_server_port }}"
     route_allowed_ips: "0"
@@ -558,7 +562,12 @@ dropbear:
 
 ## Testing
 
-All required variables should be defined in `tests/vars.yml`.
+Device(s) can be defined in `tests/inventory.yml`
+
+All required variables should be defined (according to `inventory.yml`) in:
+- `tests/group_vars/openwrt.yml`
+- `tests/host_vars/archer.yml`
+- `tests/host_vars/mikrotik.yml`
 
 Test can be launched from the root directory of the collection by running:
 
@@ -576,15 +585,16 @@ fLy0v3rH34d
 
 ## TODO
 
+- ~~[802.11s Based Wireless Mesh Networking](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s)~~
 - ~~[B.A.T.M.A.N.](https://openwrt.org/docs/guide-user/network/wifi/mesh/batman)~~
 - [DDNS client](https://openwrt.org/docs/guide-user/services/ddns/client)
 - ~~[ExtRoot](https://openwrt.org/docs/guide-user/additional-software/extroot_configuration)~~
-- ~~[802.11s Based Wireless Mesh Networking](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s)~~
+- [LED configuration](https://openwrt.org/docs/guide-user/base-system/led_configuration)
+- [Prometheus monitoring](https://www.cloudrocket.at/posts/monitor-openwrt-nodes-with-prometheus/)
 - ~~[Policy-Based Routing](https://docs.openwrt.melmac.net/pbr/)~~
+- [Upgrade firmware](https://openwrt.org/docs/guide-user/installation/sysupgrade.cli)
 - ~~[Wireguard](https://openwrt.org/docs/guide-user/services/vpn/wireguard/start)~~
 - [Xray VPN](https://openwrt.org/packages/pkgdata/xray-core)
-
----
 
 ## If you like the project please feel free to support further development
 
