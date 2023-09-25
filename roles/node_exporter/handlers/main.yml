@@ -1,0 +1,7 @@
+---
+# Reload node-exporter service
+- name: Reload node_exporter
+  ansible.builtin.service:
+    name: "prometheus-node-exporter-lua"
+    state: reloaded
+    enabled: true
