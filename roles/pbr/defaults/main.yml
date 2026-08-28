@@ -1,39 +1,17 @@
 ---
 # Policy-Based Routing packages
-pbr_pkgs: ["pbr", "luci-app-pbr"]
+pbr_pkgs: [pbr, luci-app-pbr]
 
 # Dnsmasq-full required version
-dnsmasq_full_required_version: "2.89"
+# pbr needs nftset support, which landed in dnsmasq 2.87 and is only reliable
+# from 2.89 onwards
+pbr_dnsmasq_full_required_version: "2.89"
+
+# The two below are empty by default, so the role only installs packages until
+# it is configured. The accepted keys are documented in README.md.
 
 # PBR service configuration
-pbr_service:
-  enabled: ""
-  verbosity: ""
-  strict_enforcement: ""
-  resolver_set: ""
-  resolver_instance: []
-  ipv6_enabled: ""
-  supported_interface: []
-  ignored_interface: []
-  boot_timeout: ""
-  rule_create_option: ""
-  icmp_interface: ""
-  wan_mark: ""
-  fw_mask: ""
-  secure_reload: ""
-  webui_show_ignore_target: ""
-  webui_supported_protocol: []
+pbr_service: {}
 
 # PBR policies
-pbr_policies:
-  - id: ""
-    name: ""
-    state: ""
-    enabled: ""
-    interface: ""
-    src_addr: []
-    src_port: []
-    dest_addr: []
-    dest_port: []
-    proto: ""
-    chain: ""
+pbr_policies: []

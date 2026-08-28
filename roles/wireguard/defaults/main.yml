@@ -1,28 +1,13 @@
 ---
 # Wireguard packages
 wireguard_pkgs:
-  ["wireguard-tools", "luci-proto-wireguard", "luci-app-wireguard", "qrencode"]
+  [wireguard-tools, luci-proto-wireguard, luci-app-wireguard, qrencode]
 
-# Wireguard servers
-wireguard_interfaces:
-  - id: ""
-    state: ""
-    proto: ""
-    private_key: ""
-    addresses: ""
-    listen_port: ""
-    peers: []
+# The two below are empty by default, so the role only installs packages until
+# it is configured. The accepted keys for each entry are documented in README.md.
+
+# Wireguard interfaces
+wireguard_interfaces: []
 
 # Wireguard peers
-wireguard_peers:
-  - id: ""
-    name: ""
-    state: ""
-    public_key: ""
-    preshared_key: ""
-    endpoint_host: ""
-    endpoint_port: ""
-    route_allowed_ips: ""
-    persistent_keepalive: ""
-    allowed_ips: []
-    wireguard_interface_name: ""
+wireguard_peers: []

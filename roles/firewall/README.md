@@ -11,7 +11,7 @@ OpenWRT `firewall` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `firewall_defaults` | [Minimal firewall configuration](https://openwrt.org/docs/guide-user/firewall/firewall_configuration#defaults) |  | `dictionary` |  |
 | &emsp;`input` | Set policy for the `INPUT` chain of the `filter` table (`ACCEPT`, `REJECT`, `DROP`) | `optional` | `string` | `REJECT` |

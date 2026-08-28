@@ -2,6 +2,7 @@
 # Configure globals section
 - name: Configure globals section
   ansible.builtin.include_tasks: globals.yml
+  when: network_globals | length > 0
 
 # Configure device section
 - name: Configure device section

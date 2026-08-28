@@ -1,585 +1,206 @@
-# Ansible Collection - flyoverhead.openwrt
+# `flyoverhead.openwrt`
 
-Ansible collection for automative configuration of OpenWrt devices (without Python).
+[![Version](https://img.shields.io/badge/version-2.0.0-blue)](galaxy.yml)
+[![ansible-core](https://img.shields.io/badge/ansible--core-%E2%89%A52.16-black?logo=ansible&logoColor=white)](https://docs.ansible.com/ansible-core/devel/index.html)
+[![License](https://img.shields.io/badge/license-GPL--3.0--only-green)](https://www.gnu.org/licenses/gpl-3.0)
+[![Platform](https://img.shields.io/badge/platform-OpenWrt%2022.03%20%7C%2023.05-00B5E2?logo=openwrt&logoColor=white)](#-supported-os)
+[![Roles](https://img.shields.io/badge/roles-12-orange)](#-roles)
 
-## Compatibilities
+Configuration of OpenWrt devices over SSH, without Python on the target. Every
+role drives UCI directly: system, network, wireless, mesh, firewall, DHCP/DNS,
+Wireguard, policy-based routing, SSH and a Prometheus exporter.
 
-This collection was tested on
-- [MikroTik RouterBOARD hAP ac²](https://openwrt.org/toh/mikrotik/hap_ac2)
-- [TP-Link Archer C7 AC1750](https://openwrt.org/toh/tp-link/archer_c7)
-- [Xiaomi Mi Router 4A Gigabit Edition](https://openwrt.org/inbox/toh/xiaomi/xiaomi_mi_router_4a_gigabit_edition)
+These roles configure a device that already runs OpenWrt. Flashing the firmware
+is out of scope.
 
-## Supported OS
-
-- OpenWrt 22.03
-
-## Installation and Usage
+## 🚀 Quick Start
 
 ### Requirements
 
-- Ansible `>=2.13`
+- `ansible-core >=2.16` on the controller
 
-- Task `>=3.20`
+- Collections: `ansible.utils >=2.5.0` (the `wireguard` role uses `ipmath`)
+
+- The [`gekmihesg.openwrt`](https://github.com/gekmihesg/ansible-openwrt) role.
+  It supplies the `uci` and `opkg` modules and the action-plugin monkeypatch
+  that rewrites `ansible.builtin.*` calls into shell equivalents. Every role
+  here depends on it, and it is resolved through `roles_path`, not as a
+  collection.
+
+- Task `>=3.20`, for the helper targets only
+
+- SSH access to the device as `root`
 
 ### Installation
 
-Cloning repo:
+Installing the dependencies:
 
 ```bash
-git clone https://github.com/flyoverhead/ansible-openwrt
+ansible-galaxy collection install -r requirements.yml
+ansible-galaxy role install -r requirements.yml -p .ansible/roles
+pip install -r requirements.txt
 ```
 
-Installing requirements:
+Or, equivalently, `task install`.
+
+Installing the collection itself:
 
 ```bash
-cd ansible-openwrt
-ansible-galaxy collection install -r requirements.yml
+ansible-galaxy collection install git+https://github.com/flyoverhead/ansible-openwrt.git
 ```
 
 ### Roles usage
 
-Full documentation and usage examples of role `<role>` can be found in `roles/<role>/README.md`.
+Full documentation and usage examples of role `<role>` can be found in
+`roles/<role>/README.md`.
+
+Order matters. Run `extroot` first — it migrates the overlay onto USB and
+reboots, so anything committed before it lands on the overlay that is about to
+be replaced. `system` and `network` come next, since later roles attach to the
+interfaces `network` defines. `batman` or `mesh11sd` must precede `wireless`,
+because both create wireless interfaces of their own. Everything after that is
+independent.
 
 ### Example Playbook
 
-<details>
-  <summary>playbook.yml</summary>
-
 ```yaml
 ---
-- name: Configure openwrt
+- name: configure openwrt devices
   hosts: openwrt
   ignore_unreachable: true
   gather_facts: false
-  tags: configure_openwrt
-
-  pre_tasks:
-    - name: Update package cache
-      ansible.builtin.command:
-        cmd: "opkg update"
-      changed_when: false
 
   roles:
-    - extroot
-    - system
-    - network
-    - batman
-    - wireless
-    - wireguard
-    - firewall
-    - pbr
-    - dropbear
-    - dhcp
-
-  post_tasks:
-    - name: Reboot device
-      ansible.builtin.command:
-        cmd: "reboot"
-      changed_when: false
+    - flyoverhead.openwrt.extroot
+    - flyoverhead.openwrt.system
+    - flyoverhead.openwrt.network
+    - flyoverhead.openwrt.batman
+    - flyoverhead.openwrt.wireless
+    - flyoverhead.openwrt.wireguard
+    - flyoverhead.openwrt.firewall
+    - flyoverhead.openwrt.pbr
+    - flyoverhead.openwrt.dropbear
+    - flyoverhead.openwrt.dhcp
+    - flyoverhead.openwrt.node_exporter
 ```
 
-> For `gekmihesg.openwrt` role works properly it is mandatory to use `openwrt` as a hosts group name. More details can be found at [gekmihesg/ansible-openwrt#ansible-role-openwrt](https://github.com/gekmihesg/ansible-openwrt#ansible-role-openwrt).
-
-</details>
+`gather_facts` must be `false`: fact gathering needs Python, which these devices
+do not have.
 
 ### Example Variables
 
-<details>
-  <summary>Description</summary>
-<br />
-Example configuration for `TP-Link Archer C7` and `MikroTik hAP ac²`
+A complete, working configuration for two devices lives under
+[`tests/`](tests/) and is the reference this collection is developed against:
 
-- Enable extroot for external USB device
-- Create network for IoT devices (IOT) isolated from LAN
-- Disable WAN IPv6 network interface
-- Create B.A.T.M.A.N. mesh network interfaces
-- Separate mesh networks (LAN and IOT) by mapping VLAN ports (bat0.2 and bat0.3)
-- Delete default WIFI APs
-- Create WIFI mesh interface for mesh nodes (server) communication
-- Create WIFI APs for LAN (5GHz only) and IOT (both 2.4Ghz and 5GHz) networks with fast BSS transition (802.11r) support
-- Configure Dnsmasq and DHCP with static leases for example LAN and IOT clients
-- Create Wireguard interface for remote access to the router from the Internet with peers
-- Create Wireguard interface for access to remote VPS server (for VPN routing)
-- Configure firewall zones, zone forwardings, rules and redirects
-- Configure Policy-Based routing for example domains to remote VPS server
-</details>
+| File | Contents |
+| :--- | :--- |
+| [`tests/group_vars/openwrt.yml`](tests/group_vars/openwrt.yml) | Everything shared: network, wireless, mesh, DHCP, Wireguard, firewall, PBR, dropbear |
+| [`tests/host_vars/archer.yml`](tests/host_vars/archer.yml) | Per-device settings for a TP-Link Archer C7 |
+| [`tests/host_vars/mikrotik.yml`](tests/host_vars/mikrotik.yml) | Per-device settings for a MikroTik hAP ac² |
 
-<br />
-<b>host_vars</b>
-<details>
-  <summary>archer.yml</summary>
+That configuration:
 
-```yaml
-# Device subnet
-device_ip_address: "192.168.1.1"
-device_dhcp_start: "50"
+- Enables extroot on an external USB device
+- Creates an IoT network isolated from LAN, and disables the WAN IPv6 interface
+- Builds a B.A.T.M.A.N. mesh, separating LAN and IoT over VLAN ports `bat0.2`
+  and `bat0.3`
+- Replaces the stock APs with LAN (5 GHz) and IoT (2.4 and 5 GHz) APs, with
+  802.11r fast BSS transition
+- Configures dnsmasq, DHCP pools and static leases
+- Creates one Wireguard interface for inbound remote access and one for routing
+  out through a VPS
+- Sets firewall zones, forwardings, rules and redirects
+- Routes selected domains through the VPS with policy-based routing
 
-# Device LAN bridge port
-device_bridge_port: "eth0.1"
+## 🖥 Supported OS
 
-# Device WIFI radios
-device_5g_radio: "radio1"
-device_2g_radio: "radio0"
+| OS | Status |
+| :--- | :--- |
+| OpenWrt 23.05 | Supported |
+| OpenWrt 22.03 | Supported |
+| OpenWrt 24.10 and newer | **Not supported** — see Gotchas |
 
-# Wireguard Home port
-wireguard_home_port: "51820"
+Tested on:
 
-# Wireguard VPS address
-wireguard_vps_address: "10.0.0.2"
+- [MikroTik RouterBOARD hAP ac²](https://openwrt.org/toh/mikrotik/hap_ac2)
+- [TP-Link Archer C7 AC1750](https://openwrt.org/toh/tp-link/archer_c7)
+- [Xiaomi Mi Router 4A Gigabit Edition](https://openwrt.org/inbox/toh/xiaomi/xiaomi_mi_router_4a_gigabit_edition)
 
-# Enable extroot
-extroot_enabled: true
-
-# Configure system settings
-system:
-  hostname: "archer"
-  description: "TP-Link Archer C7 AC1750"
-  timezone: "UTC"
-  zonename: "UTC"
-```
-</details>
-
-<details>
-  <summary>mikrotik.yml</summary>
-  
-```yaml
-# Device subnet
-device_ip_address: "192.168.1.2"
-device_dhcp_start: "100"
-
-# Device LAN bridge port
-device_bridge_port: "eth0"
-
-# Device WIFI radios
-device_5g_radio: "radio1"
-device_2g_radio: "radio0"
-
-# Wireguard Home port
-wireguard_home_port: "51821"
-
-# Wireguard VPS address
-wireguard_vps_address: "10.0.0.3"
-
-# Enable extroot
-extroot_enabled: true
-
-# Configure system settings
-system:
-  hostname: "mikrotik"
-  description: "MikroTik hAP ac2"
-  timezone: "UTC"
-  zonename: "UTC"
-```
-</details>
-
-<br />
-<b>group_vars</b>
-<details>
-  <summary>openwrt.yml</summary>
-
-```yaml
-# Configure WIFI
-wifi_password: "passowrd"
-
-# Configure Wireguard VPS
-wireguard_server_public_key: "public_key"
-wireguard_server_preshared_key: "preshared_key"
-wireguard_server_address: "address"
-wireguard_server_port: "port"
-
-# Configure network devices
-network_devices:
-  - id: "@device[0]"
-    name: "br-lan"
-    state: "present"
-    type: "bridge"
-    ports: ["{{ device_bridge_port }}", "bat0.2"]
-    stp: "1"
-    igmp_snooping: "1"
-    ipv6: "0"
-  - id: "iot_dev"
-    name: "br-iot"
-    state: "present"
-    type: "bridge"
-    ports: ["bat0.3"]
-    stp: "1"
-    igmp_snooping: "1"
-    ipv6: "0"
-
-# Configure network interfaces
-network_interfaces:
-  - id: "lan"
-    state: "present"
-    device: "br-lan"
-    proto: "static"
-    auto: "1"
-    force_link: "1"
-    ipaddr: "{{ device_ip_address }}"
-    netmask: "255.255.255.0"
-    mtu: "1536"
-    ipv6: "0"
-    delegate: "0"
-  - id: "wan"
-    state: "present"
-    proto: "dhcp"
-    auto: "1"
-    force_link: "1"
-    peerdns: "0"
-    dns: ["1.1.1.1", "9.9.9.9"]
-    ipv6: "0"
-    delegate: "0"
-  - id: "iot"
-    state: "present"
-    device: "br-iot"
-    proto: "static"
-    auto: "1"
-    force_link: "1"
-    ipaddr: "{{ device_ip_address | ansible.utils.ipmath(2560) }}"
-    netmask: "255.255.255.0"
-    mtu: "1536"
-    ipv6: "0"
-    delegate: "0"
-  - id: "wan6"
-    state: "absent"
-
-# Configure batman mesh network
-batman_enabled: true
-ath10k_ct_fix: true
-
-batman_network_interfaces:
-  - id: "bat0"
-    state: "present"
-    proto: "batadv"
-    routing_algo: "BATMAN_IV"
-    fragmentation: "1"
-    gw_mode: "server"
-    bridge_loop_avoidance: "1"
-    distributed_arp_table: "1"
-    multicast_mode: "1"
-    hop_penalty: "30"
-    delegate: "0"
-  - id: "batmesh"
-    state: "present"
-    proto: "batadv_hardif"
-    master: "bat0"
-    mtu: "2304"
-    delegate: "0"
-
-batman_wireless_interfaces:
-  - id: "mesh"
-    name: "mesh"
-    state: "present"
-    device: "{{ device_5g_radio }}"
-    network: ["batmesh"]
-    mode: "mesh"
-    mesh_id: "mesh"
-    mesh_fwding: "0"
-    encryption: "sae"
-    key: "{{ wifi_password }}"
-    disabled: "0"
-
-# Configure wireless network
-wireless_devices:
-  - id: "{{ device_5g_radio }}"
-    type: "mac80211"
-    channel: "44"
-    htmode: "VHT80"
-    disabled: "0"
-  - id: "{{ device_2g_radio }}"
-    type: "mac80211"
-    channel: "1"
-    htmode: "VHT40"
-    disabled: "0"
-
-wireless_interfaces:
-  - id: "lan5"
-    name: "wlan5"
-    state: "present"
-    device: "{{ device_5g_radio }}"
-    network: ["lan"]
-    mode: "ap"
-    ssid: "lan5"
-    encryption: "sae-mixed"
-    key: "{{ wifi_password }}"
-    ieee80211r: "1"
-    mobility_domain: "1"
-    ft_over_ds: "1"
-    ft_psk_generate_local: "1"
-    disabled: "0"
-  - id: "iot5"
-    name: "wiot5"
-    state: "present"
-    device: "{{ device_5g_radio }}"
-    network: ["iot"]
-    mode: "ap"
-    ssid: "iot5"
-    encryption: "sae-mixed"
-    key: "{{ wifi_password }}"
-    ieee80211r: "1"
-    mobility_domain: "1"
-    ft_over_ds: "1"
-    ft_psk_generate_local: "1"
-    disabled: "0"
-  - id: "iot2"
-    name: "wiot2"
-    state: "present"
-    device: "{{ device_2g_radio }}"
-    network: ["iot"]
-    mode: "ap"
-    ssid: "iot2"
-    encryption: "sae-mixed"
-    key: "{{ wifi_password }}"
-    ieee80211r: "1"
-    mobility_domain: "1"
-    ft_over_ds: "1"
-    ft_psk_generate_local: "1"
-    disabled: "0"
-  - id: "default_radio0"
-    state: "absent"
-  - id: "default_radio1"
-    state: "absent"
-
-# Configure dnsmasq and dhcp
-dhcp_common:
-  authoritative: "1"
-  boguspriv: "1"
-  cachesize: "1000"
-  domainneeded: "1"
-  dnssec: "1"
-  dnsseccheckunsigned: "1"
-  filterwin2k: "1"
-  rebind_protection: "1"
-  rebind_localhost: "1"
-  server: ["1.1.1.1", "9.9.9.9"]
-  allservers: "1"
-  localservice: "0"
-  nonegcache: "1"
-
-dhcp_pools:
-  - interface: "lan"
-    state: "present"
-    force: "1"
-    dhcpv4: "server"
-    limit: "50"
-    start: "{{ device_dhcp_start }}"
-    ra: "disabled"
-    dhcpv6: "disabled"
-    dns_service: "0"
-  - interface: "iot"
-    state: "present"
-    force: "1"
-    dhcpv4: "server"
-    limit: "50"
-    start: "{{ device_dhcp_start }}"
-    ra: "disabled"
-    dhcpv6: "disabled"
-    dns_service: "0"
-
-dhcp_leases:
-  - id: "host01"
-    name: "host01"
-    state: "present"
-    mac: "00:11:22:33:44:55"
-  - id: "host02"
-    name: "host02"
-    state: "present"
-    mac: "55:44:33:22:11:00"
-
-# Configure wireguard interfaces
-wireguard_interfaces:
-  - id: "wg_home"
-    state: "present"
-    proto: "wireguard"
-    addresses: "{{ device_ip_address | ansible.utils.ipmath(5120) }}"
-    listen_port: "{{ wireguard_home_port }}"
-    peers: ["peer01", "peer02"]
-  - id: "wg_remote"
-    state: "present"
-    proto: "wireguard"
-    addresses: "{{ wireguard_vps_address }}"
-
-# Configure wireguard peers
-wireguard_peers:
-  - id: "vps"
-    name: "VPS"
-    state: "present"
-    public_key: "{{ wireguard_server_public_key }}"
-    preshared_key: "{{ wireguard_server_preshared_key }}"
-    endpoint_host: "{{ wireguard_server_address }}"
-    endpoint_port: "{{ wireguard_server_port }}"
-    route_allowed_ips: "0"
-    persistent_keepalive: "25"
-    allowed_ips: ["0.0.0.0/0"]
-    wireguard_interface_name: "wg_remote"
-
-# Configure firewall
-firewall_defaults:
-  input: "ACCEPT"
-  forward: "REJECT"
-  output: "ACCEPT"
-  drop_invalid: "1"
-  synflood_protect: "1"
-  flow_offloading: "1"
-  flow_offloading_hw: "1"
-
-firewall_zones:
-  - id: "@zone[0]"
-    name: "lan"
-    state: "present"
-    network: ["lan", "wg_home"]
-    input: "ACCEPT"
-    forward: "ACCEPT"
-    output: "ACCEPT"
-    family: "ipv4"
-  - id: "iot"
-    name: "iot"
-    state: "present"
-    network: ["iot"]
-    input: "DROP"
-    forward: "DROP"
-    output: "ACCEPT"
-    family: "ipv4"
-  - id: "@zone[1]"
-    name: "wan"
-    state: "present"
-    network: ["wan", "wg_remote"]
-    masq: "1"
-    mtu_fix: "1"
-    input: "DROP"
-    forward: "DROP"
-    output: "ACCEPT"
-    family: "ipv4"
-
-firewall_forwardings:
-  - id: "lan_iot"
-    state: "present"
-    src: "lan"
-    dest: "iot"
-    family: "ipv4"
-  - id: "iot_wan"
-    state: "present"
-    src: "iot"
-    dest: "wan"
-    family: "ipv4"
-
-firewall_rules:
-  - id: "allow_iot_dhcp_dns"
-    name: "Allow DHCP and DNS for IoT network"
-    state: "present"
-    src: "iot"
-    dest_port: ["53", "67", "68"]
-    target: "ACCEPT"
-    family: "ipv4"
-  - id: "wg_home_access"
-    name: "Allow remote access to Wireguard home server"
-    state: "present"
-    src: "wan"
-    dest_port: ["{{ wireguard_home_port }}"]
-    target: "ACCEPT"
-    proto: ["udp"]
-    family: "ipv4"
-
-firewall_redirects:
-  - id: "force_dns_lan"
-    name: "Force DNS for LAN network"
-    state: "present"
-    src: "lan"
-    src_dport: "53"
-    target: "DNAT"
-    family: "ipv4"
-  - id: "force_dns_iot"
-    name: "Force DNS for IoT network"
-    state: "present"
-    src: "iot"
-    src_dport: "53"
-    target: "DNAT"
-    family: "ipv4"
-
-# Configure policy-based routing
-pbr_service:
-  enabled: "1"
-  verbosity: "0"
-  strict_enforcement: "0"
-  resolver_set: "dnsmasq.nftset"
-  ipv6_enabled: "0"
-  ignored_interface: ["wg_home"]
-  boot_timeout: "30"
-  rule_create_option: "add"
-  webui_show_ignore_target: "0"
-  webui_supported_protocol: ["all", "tcp", "udp", "tcp udp", "icmp"]
-
-pbr_policies:
-  - id: "instagram"
-    name: "Instagram"
-    state: "present"
-    enabled: "1"
-    interface: "wg_remote"
-    dest_addr:
-      [
-        "129.134.0.0/16",
-        "179.60.0.0/16",
-        "185.60.0.0/16",
-        "185.199.0.0/16",
-        "31.13.0.0/16",
-        "157.240.0.0/16",
-        "instagram.com",
-      ]
-    chain: "prerouting"
-
-# Configure dropbear
-dropbear:
-  enable: "1"
-  verbose: "0"
-  PasswordAuth: "1"
-  Port: "22"
-  RootPasswordAuth: "1"
-  RootLogin: "1"
-  Interface: "lan"
-  keyfile: "/etc/dropbear/authorized_keys"
-  mdns: "0"
-  MaxAuthTries: "3"
-```
-
-</details>
-
-## Included content
-
-### Roles
+## 📦 Roles
 
 | Name | Description |
 | :--- | :--- |
-| [flyoverhead.openwrt.batman](roles/batman/README.md) | Ansible role for OpenWrt `B.A.T.M.A.N.` mesh network configuration |
-| [flyoverhead.openwrt.dhcp](roles/dhcp/README.md) | Ansible role for OpenWrt `dhcp` configuration |
-| [flyoverhead.openwrt.dropbear](roles/dropbear/README.md) | Ansible role for OpenWrt `dropbear` configuration |
-| [flyoverhead.openwrt.extroot](roles/extroot/README.md) | Ansible role for OpenWrt `extroot` configuration |
-| [flyoverhead.openwrt.firewall](roles/firewall/README.md) | Ansible role for OpenWrt `firewall` configuration |
-| [flyoverhead.openwrt.mesh11sd](roles/mesh11sd/README.md) | Ansible role for OpenWrt `802.11s` mesh network configuration |
-| [flyoverhead.openwrt.network](roles/network/README.md) | Ansible role for OpenWrt `network` configuration |
-| [flyoverhead.openwrt.pbr](roles/pbr/README.md) | Ansible role for OpenWrt `Policy-Based Routing` configuration |
-| [flyoverhead.openwrt.system](roles/system/README.md) | Ansible role for OpenWrt `system` configuration |
-| [flyoverhead.openwrt.wireguard](roles/wireguard/README.md) | Ansible role for OpenWrt `wireguard` configuration |
-| [flyoverhead.openwrt.wireless](roles/wireless/README.md) | Ansible role for OpenWrt `wireless` configuration |
+| [`batman`](roles/batman/README.md) | B.A.T.M.A.N. adv mesh interfaces and mesh-capable wpad |
+| [`dhcp`](roles/dhcp/README.md) | dnsmasq options, DHCP pools and static leases |
+| [`dropbear`](roles/dropbear/README.md) | Dropbear SSH daemon settings and authorized keys |
+| [`extroot`](roles/extroot/README.md) | External root on USB, with overlay migration and restore |
+| [`firewall`](roles/firewall/README.md) | Defaults, zones, forwardings, rules, redirects, ipsets, NAT |
+| [`mesh11sd`](roles/mesh11sd/README.md) | 802.11s mesh interfaces and the mesh11sd daemon |
+| [`network`](roles/network/README.md) | Globals, devices, interfaces, rules and routes |
+| [`node_exporter`](roles/node_exporter/README.md) | Prometheus node-exporter-lua and its listen settings |
+| [`pbr`](roles/pbr/README.md) | Policy-Based Routing service settings and policies |
+| [`system`](roles/system/README.md) | Hostname, description, timezone and logging |
+| [`wireguard`](roles/wireguard/README.md) | Wireguard interfaces and peers, with key generation |
+| [`wireless`](roles/wireless/README.md) | Radios and interfaces, including 802.11r fast roaming |
 
-## Testing
+## ⚠️ Gotchas
 
-Device(s) can be defined in `tests/inventory.yml`
+- **The host group must be named `openwrt`.** The `gekmihesg.openwrt` vars
+  plugin only rewrites `ansible.builtin.*` to its shell modules for hosts in a
+  group with that exact name. Outside it, Ansible sends real Python modules to a
+  device that has no Python and every task fails. See
+  [gekmihesg/ansible-openwrt](https://github.com/gekmihesg/ansible-openwrt#ansible-role-openwrt).
 
-All required variables should be defined (according to `inventory.yml`) in:
-- `tests/group_vars/openwrt.yml`
-- `tests/host_vars/archer.yml`
-- `tests/host_vars/mikrotik.yml`
+- **OpenWrt 24.10 replaced `opkg` with `apk`.** Every role installs packages
+  through `opkg`, and `gekmihesg.openwrt` ships no `apk` wrapper, so package
+  installation fails on 24.10 and newer. The UCI configuration tasks themselves
+  are unaffected.
 
-Test can be launched from the root directory of the collection by running:
+- **`extroot` repartitions and reboots.** With `extroot_enabled: true` and no
+  extroot yet configured, the role runs `parted` and `mkfs.ext4` over the whole
+  of `extroot_device` (`sda` by default), copies the overlay onto it and reboots
+  the device. Everything on that disk is destroyed. The default is `false`.
 
-```Bash
-task test
+- **`batman` and `mesh11sd` remove wpad packages.** Both uninstall every variant
+  listed in `*_non_mesh_pkgs` before installing `wpad-mesh-wolfssl`. On a device
+  reached over Wi-Fi, that drops the connection.
+
+- **`pbr` may replace dnsmasq with a snapshot build.** If the installed
+  `dnsmasq-full` is older than `pbr_dnsmasq_full_required_version` and the
+  release feed has nothing newer, the role removes dnsmasq and installs
+  `dnsmasq-full`, `libubox` and `libubus` from the OpenWrt *snapshot* feed —
+  mixing snapshot packages into a release install.
+
+- **`extroot` fetches two scripts from the OpenWrt wiki at run time** and
+  executes them, so what runs is whatever the wiki serves that day.
+
+- **Every role is a no-op until configured.** All list and dictionary variables
+  default to empty, so a role with no configuration installs its packages (where
+  it has any) and changes nothing else.
+
+## 🧪 Testing
+
+Devices are defined in [`tests/inventory.yml`](tests/inventory.yml), and their
+variables in `tests/group_vars/` and `tests/host_vars/`.
+
+```bash
+task provision   # run tests/playbook.yml against the inventory
+task lint        # pre-commit over the whole collection
+task build       # build the collection tarball
 ```
 
-## License
+There is no VM harness: OpenWrt roles need real hardware, so `provision` runs
+against whatever `tests/inventory.yml` points at. The playbook reboots every
+device when it finishes.
 
-- GPL-3.0-only
+## 📄 License
 
-## Author Information
+[GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt)
+
+`roles/batman/files/luci-proto-batman-adv.ipk` is a prebuilt OpenWrt package
+redistributed here, under its own upstream licence.
+
+## 👤 Author Information
 
 fLy0v3rH34d
 
@@ -590,8 +211,9 @@ fLy0v3rH34d
 - [DDNS client](https://openwrt.org/docs/guide-user/services/ddns/client)
 - ~~[ExtRoot](https://openwrt.org/docs/guide-user/additional-software/extroot_configuration)~~
 - [LED configuration](https://openwrt.org/docs/guide-user/base-system/led_configuration)
-- [Prometheus monitoring](https://www.cloudrocket.at/posts/monitor-openwrt-nodes-with-prometheus/)
+- ~~[Prometheus node-exporter](https://www.cloudrocket.at/posts/monitor-openwrt-nodes-with-prometheus/)~~
 - ~~[Policy-Based Routing](https://docs.openwrt.melmac.net/pbr/)~~
+- [`apk` support for OpenWrt 24.10](https://openwrt.org/docs/guide-user/additional-software/opkg_to_apk)
 - [Upgrade firmware](https://openwrt.org/docs/guide-user/installation/sysupgrade.cli)
 - ~~[Wireguard](https://openwrt.org/docs/guide-user/services/vpn/wireguard/start)~~
 - [Xray VPN](https://openwrt.org/packages/pkgdata/xray-core)

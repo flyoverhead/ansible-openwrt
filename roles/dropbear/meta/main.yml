@@ -1,12 +1,25 @@
 ---
+
 galaxy_info:
+  role_name: dropbear
+  namespace: flyoverhead
   author: flyoverhead
-  description: Configure dropbear settings
-  license: GPL-3.0
-  min_ansible_version: "2.13"
+  description: Dropbear SSH daemon settings and authorized keys
+  license: GPL-3.0-only
+  min_ansible_version: '2.16'
   platforms:
     - name: OpenWrt
-      versions: ["22.03"]
-  galaxy_tags: ["openwrt", "dropbear"]
+      versions:
+        - '22.03'
+        - '23.05'
+  galaxy_tags:
+    - dropbear
+    - openwrt
+    - security
+    - ssh
+
+# Provides the `uci` and `opkg` modules and the action-plugin monkeypatch that
+# rewrites `ansible.builtin.*` to shell equivalents. Resolved from `roles/`
+# through `roles_path`; see requirements.yml.
 dependencies:
   - role: gekmihesg.openwrt

@@ -1,66 +1,18 @@
 ---
+# Every variable below is empty by default, so the role is a no-op until it is
+# configured. The accepted keys for each entry are documented in README.md.
+
 # globals section
-network_globals:
-  network_ula_prefix: ""
-  network_packet_steering: ""
+network_globals: {}
 
 # device section
-network_devices:
-  - id: ""
-    name: ""
-    state: ""
-    type: ""
-    ports: []
-    stp: ""
-    igmp_snooping: ""
-    ipv6: ""
+network_devices: []
 
 # interface section
-network_interfaces:
-  - id: ""
-    state: ""
-    device: ""
-    proto: ""
-    auto: ""
-    force_link: ""
-    ipaddr: ""
-    netmask: ""
-    gateway: ""
-    peerdns: ""
-    dns: []
-    username: ""
-    password: ""
-    mtu: ""
-    ipv6: ""
-    delegate: ""
-    ip6assign: ""
+network_interfaces: []
 
 # rule section
-network_rules:
-  - id: ""
-    state: ""
-    mark: ""
-    in: ""
-    out: ""
-    src: ""
-    dest: ""
-    invert: ""
-    priority: ""
-    lookup: ""
-    goto: ""
-    action: ""
-    disabled: ""
+network_rules: []
 
 # route section
-network_routes:
-  - id: ""
-    state: ""
-    interface: ""
-    target: ""
-    netmask: ""
-    gateway: ""
-    table: ""
-    source: ""
-    type: ""
-    proto: ""
-    disabled: ""
+network_routes: []

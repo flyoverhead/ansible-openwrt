@@ -8,10 +8,10 @@
 - name: Delete firewall rule {{ item.id }}
   when: "'absent' in firewall_rule_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "rule"
+    type: rule
 
 # Create and configure firewall rule
 - name: Create and configure firewall rule
@@ -20,18 +20,18 @@
     # Create firewall rule
     - name: Create firewall rule {{ item.id | default('@rule[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@rule[-1]') }}"
-        type: "rule"
+        type: rule
 
     # Configure firewall rule
     - name: Configure firewall rule {{ item.id | default('@rule[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@rule[-1]') }}"
-        type: "rule"
+        type: rule
         value:
           name: "{{ item.name | default(omit) }}"
           src: "{{ item.src | default(omit) }}"

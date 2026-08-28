@@ -6,7 +6,7 @@ OpenWRT `wireless` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Example |
+| Variable | Description | Status | Type | Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `wireless_devices` | List of [wireless devices](https://openwrt.org/docs/guide-user/network/wifi/basic#wi-fi_devices) |  | `list of dictionaries` |  |
 | &emsp;`id` | Radio device ID | `mandatory` | `string` | `radio0` |

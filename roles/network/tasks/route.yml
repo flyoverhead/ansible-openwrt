@@ -8,10 +8,10 @@
 - name: Delete network route {{ item.id }}
   when: "'absent' in network_route_state"
   uci:
-    command: "absent"
-    config: "network"
+    command: absent
+    config: network
     section: "{{ item.id }}"
-    type: "route"
+    type: route
 
 # Create and configure network route
 - name: Create and configure network route
@@ -20,18 +20,18 @@
     # Create network route
     - name: Create network route {{ item.id | default('@route[-1]') }}
       uci:
-        command: "add"
-        config: "network"
+        command: add
+        config: network
         section: "{{ item.id | default('@route[-1]') }}"
-        type: "route"
+        type: route
 
     # Configure network route
     - name: Configure network route {{ item.id | default('@route[-1]') }}
       uci:
-        command: "set"
-        config: "network"
+        command: set
+        config: network
         section: "{{ item.id | default('@route[-1]') }}"
-        type: "route"
+        type: route
         value:
           interface: "{{ item.interface | default(omit) }}"
           target: "{{ item.target | default(omit) }}"

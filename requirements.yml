@@ -1,0 +1,14 @@
+---
+
+collections:
+
+  - name: ansible.utils
+    version: '>=2.5.0'
+
+roles:
+
+  # Provides the `uci` and `opkg` modules, and the action-plugin monkeypatch
+  # that rewrites `ansible.builtin.*` to shell equivalents on hosts in the
+  # `openwrt` group. Every role in this collection depends on it.
+  - name: gekmihesg.openwrt
+    src: https://github.com/gekmihesg/ansible-openwrt

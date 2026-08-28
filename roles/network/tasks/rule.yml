@@ -8,10 +8,10 @@
 - name: Delete network rule {{ item.id }}
   when: "'absent' in network_rule_state"
   uci:
-    command: "absent"
-    config: "network"
+    command: absent
+    config: network
     section: "{{ item.id }}"
-    type: "rule"
+    type: rule
 
 # Create and configure network rule
 - name: Create and configure network rule
@@ -20,18 +20,18 @@
     # Create network rule
     - name: Create network rule {{ item.id | default('@rule[-1]') }}
       uci:
-        command: "add"
-        config: "network"
+        command: add
+        config: network
         section: "{{ item.id | default('@rule[-1]') }}"
-        type: "rule"
+        type: rule
 
     # Configure network rule
     - name: Configure network rule {{ item.id | default('@rule[-1]') }}
       uci:
-        command: "set"
-        config: "network"
+        command: set
+        config: network
         section: "{{ item.id | default('@rule[-1]') }}"
-        type: "rule"
+        type: rule
         value:
           mark: "{{ item.mark | default(omit) }}"
           in: "{{ item.in | default(omit) }}"

@@ -1,10 +1,12 @@
 ---
 # Reboot device
+# The device drops the connection mid-command, so a non-zero rc here is expected
+# and does not mean the reboot failed
 - name: Reboot device
   ansible.builtin.command:
-    cmd: "reboot"
-  register: reboot_device_status
-  changed_when: reboot_device_status != 0
+    cmd: reboot
+  changed_when: true
+  failed_when: false
 
 # Wait for device to boot up
 - name: Wait for device to boot up

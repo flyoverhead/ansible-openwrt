@@ -5,10 +5,10 @@ OpenWRT `Policy-Based Routing` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `pbr_pkgs` | List of PBR packages to be installed | `required` | `list` | `["pbr", "luci-app-pbr"]` |
-| `dnsmasq_full_required_version` | Dnsmasq-full package version required for dnsmasq nft sets support | `required` | `string` | `2.89` |
+| `pbr_dnsmasq_full_required_version` | Dnsmasq-full package version required for dnsmasq nft sets support | `required` | `string` | `2.89` |
 | `pbr_service` | PBR service configuration settings to be applied |  | `dictionary` |  |
 | &emsp;`enabled` | Enable pbr service | `required` | `boolean` | `1` |
 | &emsp;`verbosity` | Console and system log output verbosity (`0`, `1` or `2`) | `optional` | `integer` | `2` |

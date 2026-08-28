@@ -1,32 +1,42 @@
 ---
 # Get package file name
-- name: Get package file name {{ item }}
+- name: Get package file name {{ item }}  # noqa: command-instead-of-module inline-env-var
   ansible.builtin.command:
-    cmd: 'curl {{ snapshot_repo_url }} | grep {{ item }} | sed ''s/.*href=\"//'' | sed -r ''s/\".+//'''
+    # the quotes are load-bearing: the sed expressions contain both quote styles
+    # yamllint disable rule:quoted-strings
+    cmd: 'curl {{ pbr_snapshot_repo_url }} | grep {{ item }} | sed ''s/.*href=\"//'' | sed -r ''s/\".+//'''
+    # yamllint enable rule:quoted-strings
     uses_shell: true
-  register: snapshot_package_file_name
+  register: pbr_snapshot_package_file_name
   changed_when: false
+  failed_when: false
 
 # Set package file name fact
 - name: Set package file name fact
   ansible.builtin.set_fact:
-    snapshot_package_name: "{{ snapshot_package_file_name.stdout }}"
+    pbr_snapshot_package_name: "{{ pbr_snapshot_package_file_name.stdout }}"
 
-# Download package file
-- name: Download package file {{ snapshot_package_name }}
-  ansible.builtin.command:
-    cmd: "curl {{ snapshot_repo_url }}{{ snapshot_package_name }} -o {{ snapshot_package_name }}"
-    uses_shell: true
-    chdir: "/tmp"
+# Nothing to install if the index carried no match for this package
+- name: Install snapshot package {{ item }}
+  when: pbr_snapshot_package_name | length > 0
+  block:
+    # Download package file
+    - name: Download package file {{ pbr_snapshot_package_name }}  # noqa: command-instead-of-module inline-env-var
+      ansible.builtin.command:
+        cmd: curl {{ pbr_snapshot_repo_url }}{{ pbr_snapshot_package_name }} -o {{ pbr_snapshot_package_name }}
+        uses_shell: true
+        chdir: /tmp
+      changed_when: true
 
-# Install package file
-- name: Install package from file {{ snapshot_package_name }}
-  ansible.builtin.command:
-    cmd: "opkg install {{ snapshot_package_name }}"
-    chdir: "/tmp"
+    # Install package file
+    - name: Install package from file {{ pbr_snapshot_package_name }}
+      ansible.builtin.command:
+        cmd: opkg install {{ pbr_snapshot_package_name }}
+        chdir: /tmp
+      changed_when: true
 
-# Clean package file
-- name: Clean package file {{ snapshot_package_name }}
-  ansible.builtin.command:
-    cmd: "rm -f {{ snapshot_package_name }}"
-    chdir: "/tmp"
+    # Clean package file
+    - name: Clean package file {{ pbr_snapshot_package_name }}
+      ansible.builtin.file:
+        path: /tmp/{{ pbr_snapshot_package_name }}
+        state: absent

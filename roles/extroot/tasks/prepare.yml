@@ -2,12 +2,12 @@
 # Update opkg cache
 - name: Update opkg cache
   ansible.builtin.command:
-    cmd: "opkg update"
+    cmd: opkg update
   changed_when: false
 
 # Install required packages
 - name: Install required packages
   opkg:
     name: "{{ item }}"
-    state: "present"
+    state: present
   loop: "{{ extroot_pkgs }}"

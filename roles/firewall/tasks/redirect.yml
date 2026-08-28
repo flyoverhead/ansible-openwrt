@@ -8,10 +8,10 @@
 - name: Delete firewall redirect {{ item.id }}
   when: "'absent' in firewall_redirect_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "redirect"
+    type: redirect
 
 # Create and configure firewall redirect
 - name: Create and configure firewall redirect
@@ -20,18 +20,18 @@
     # Create firewall redirect
     - name: Create firewall redirect {{ item.id | default('@redirect[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@redirect[-1]') }}"
-        type: "redirect"
+        type: redirect
 
     # Configure firewall redirect
     - name: Configure firewall redirect {{ item.id | default('@redirect[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@redirect[-1]') }}"
-        type: "redirect"
+        type: redirect
         value:
           name: "{{ item.name | default(omit) }}"
           src: "{{ item.src | default(omit) }}"

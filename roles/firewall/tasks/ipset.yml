@@ -8,10 +8,10 @@
 - name: Delete firewall ipset {{ item.id }}
   when: "'absent' in firewall_ipset_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "ipset"
+    type: ipset
 
 # Create and configure firewall ipset
 - name: Create and configure firewall ipset
@@ -20,18 +20,18 @@
     # Create firewall ipset
     - name: Create firewall ipset {{ item.id | default('@ipset[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@ipset[-1]') }}"
-        type: "ipset"
+        type: ipset
 
     # Configure firewall ipset
     - name: Configure firewall ipset {{ item.id | default('@ipset[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@ipset[-1]') }}"
-        type: "ipset"
+        type: ipset
         value:
           name: "{{ item.name | default(omit) }}"
           comment: "{{ item.comment | default(omit) }}"

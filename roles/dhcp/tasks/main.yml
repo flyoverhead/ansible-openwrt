@@ -2,6 +2,7 @@
 # Configure dnsmasq section
 - name: Configure dnsmasq section
   ansible.builtin.include_tasks: dnsmasq.yml
+  when: dhcp_common | length > 0
 
 # Configure dhcp section
 - name: Configure dhcp section

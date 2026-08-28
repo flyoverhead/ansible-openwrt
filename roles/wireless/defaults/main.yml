@@ -1,32 +1,9 @@
 ---
+# Every variable below is empty by default, so the role is a no-op until it is
+# configured. The accepted keys for each entry are documented in README.md.
+
 # device section
-wireless_devices:
-  - id: ""
-    type: ""
-    disabled: ""
-    channel: ""
-    band: ""
-    htmode: ""
-    country: ""
+wireless_devices: []
 
 # interface section
-wireless_interfaces:
-  - id: ""
-    name: ""
-    state: ""
-    device: ""
-    network: []
-    mode: ""
-    disabled: ""
-    ssid: ""
-    mesh_id: ""
-    hidden: ""
-    isolate: ""
-    encryption: ""
-    key: ""
-    macfilter: ""
-    maclist: []
-    ieee80211r: ""
-    mobility_domain: ""
-    ft_over_ds: ""
-    ft_psk_generate_local: ""
+wireless_interfaces: []

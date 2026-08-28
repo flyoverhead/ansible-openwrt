@@ -1,11 +1,44 @@
-namespace: "flyoverhead"
-name: "openwrt"
-version: 1.0.0
+---
+
+namespace: flyoverhead
+name: openwrt
+version: 2.0.0
 readme: README.md
-authors: ["flyoverhead"]
+authors:
+  - flyoverhead
 description: Ansible collection for OpenWrt configuration
-license: ["GPL-3.0-only"]
-tags: ["openwrt", "configuration"]
-dependencies: {}
+license:
+  - GPL-3.0-only
+tags:
+  - batman
+  - dhcp
+  - firewall
+  - mesh
+  - networking
+  - openwrt
+  - router
+  - uci
+  - wireguard
+  - wireless
+dependencies:
+  ansible.utils: '>=2.5.0'
+
 repository: https://github.com/flyoverhead/ansible-openwrt
 issues: https://github.com/flyoverhead/ansible-openwrt/issues
+
+# fnmatch patterns against the path relative to the collection root, so nested
+# matches need a leading `*` -- a bare `.DS_Store` only ever matches the one at
+# the top level
+build_ignore:
+  - '*.DS_Store'
+  - .ansible
+  - .ansible-lint
+  - .claude
+  - .pre-commit-config.yaml
+  - .tflint.hcl
+  - .vagrant
+  - .venv
+  - .vscode
+  - .yamllint
+  - Taskfile.yml
+  - tests

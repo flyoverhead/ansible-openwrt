@@ -5,7 +5,7 @@ OpenWRT `extroot` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `extroot_enabled` | Enable extroot configuration | `required` | `boolean` | `false` |
 | `extroot_pkgs` | List of packages required for extroot configuration | `required` | `list` | `["kmod-usb-core", "kmod-usb-storage", "kmod-usb2", "kmod-usb3", "block-mount", "kmod-fs-ext4", "e2fsprogs", "parted"]` |

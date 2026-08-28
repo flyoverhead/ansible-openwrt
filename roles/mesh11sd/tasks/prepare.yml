@@ -3,18 +3,18 @@
 - name: Remove non-mesh wpad packages
   opkg:
     name: "{{ item }}"
-    state: "absent"
-  loop: "{{ non_mesh_pkgs }}"
+    state: absent
+  loop: "{{ mesh11sd_non_mesh_pkgs }}"
 
 # Update opkg cache
 - name: Update opkg cache
   ansible.builtin.command:
-    cmd: "opkg update"
+    cmd: opkg update
   changed_when: false
 
 # Install mesh packages
 - name: Install mesh packages
   opkg:
     name: "{{ item }}"
-    state: "present"
+    state: present
   loop: "{{ mesh11sd_pkgs }}"

@@ -1,0 +1,24 @@
+---
+
+galaxy_info:
+  role_name: node_exporter
+  namespace: flyoverhead
+  author: flyoverhead
+  description: Prometheus node-exporter-lua and its listen settings
+  license: GPL-3.0-only
+  min_ansible_version: '2.16'
+  platforms:
+    - name: OpenWrt
+      versions:
+        - '22.03'
+        - '23.05'
+  galaxy_tags:
+    - monitoring
+    - openwrt
+    - prometheus
+
+# Provides the `uci` and `opkg` modules and the action-plugin monkeypatch that
+# rewrites `ansible.builtin.*` to shell equivalents. Resolved from `roles/`
+# through `roles_path`; see requirements.yml.
+dependencies:
+  - role: gekmihesg.openwrt

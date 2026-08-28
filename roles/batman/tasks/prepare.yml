@@ -3,29 +3,32 @@
 - name: Remove non-mesh wpad packages
   opkg:
     name: "{{ item }}"
-    state: "absent"
-  loop: "{{ non_mesh_pkgs }}"
+    state: absent
+  loop: "{{ batman_non_mesh_pkgs }}"
 
 # Update opkg cache
 - name: Update opkg cache
   ansible.builtin.command:
-    cmd: "opkg update"
+    cmd: opkg update
   changed_when: false
 
 # Install batman packages
 - name: Install batman packages
   opkg:
     name: "{{ item }}"
-    state: "present"
+    state: present
   loop: "{{ batman_pkgs }}"
 
 # Check B.A.T.M.A.N. LuCI package status
-- name: Check batman luci package status
+# `grep` exits 1 when the package is absent, which is exactly the case the block
+# below handles, so it must not fail the task
+- name: Check batman luci package status  # noqa: inline-env-var
   ansible.builtin.command:
-    cmd: "opkg list-installed | grep luci-proto-batman-adv | awk '{print $1}'"
+    cmd: "opkg list-installed | grep luci-proto-batman-adv | awk '{print $1}'"  # yamllint disable-line rule:quoted-strings
     uses_shell: true
   register: batman_luci_package_status
-  changed_when: batman_luci_package_status.rc != 0
+  changed_when: false
+  failed_when: false
 
 # Install B.A.T.M.A.N. LuCI package
 - name: Install batman luci package
@@ -36,13 +39,20 @@
     # Copy local package file
     - name: Copy luci-proto-batman-adv package file
       ansible.builtin.copy:
-        src: "luci-proto-batman-adv.ipk"
-        dest: "/tmp/luci-proto-batman-adv.ipk"
-        owner: "root"
-        group: "root"
-        mode: "0755"
+        src: luci-proto-batman-adv.ipk
+        dest: /tmp/luci-proto-batman-adv.ipk
+        owner: root
+        group: root
+        mode: "0644"
 
     # Install B.A.T.M.A.N. LuCI package
     - name: Install luci-proto-batman-adv package file
       ansible.builtin.command:
-        cmd: "opkg install /tmp/luci-proto-batman-adv.ipk"
+        cmd: opkg install /tmp/luci-proto-batman-adv.ipk
+      changed_when: true
+
+    # Remove the uploaded package file
+    - name: Clean luci-proto-batman-adv package file
+      ansible.builtin.file:
+        path: /tmp/luci-proto-batman-adv.ipk
+        state: absent

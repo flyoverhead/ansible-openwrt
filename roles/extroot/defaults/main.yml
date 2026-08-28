@@ -1,19 +1,30 @@
 ---
-# Deafult extroot status
+# Default extroot status
 extroot_enabled: false
+
+# Set by tasks/check.yml when extroot is enabled and not yet configured. Defined
+# here so that the guards in tasks/main.yml resolve when extroot_enabled is false
+# and check.yml never runs.
+extroot_configure: false
 
 # extroot required packages
 extroot_pkgs:
   [
-    "kmod-usb-core",
-    "kmod-usb-storage",
-    "kmod-usb2",
-    "kmod-usb3",
-    "block-mount",
-    "kmod-fs-ext4",
-    "e2fsprogs",
-    "parted",
+    kmod-usb-core,
+    kmod-usb-storage,
+    kmod-usb2,
+    kmod-usb3,
+    block-mount,
+    kmod-fs-ext4,
+    e2fsprogs,
+    parted,
   ]
 
 # extroot device
-extroot_device: "sda"
+extroot_device: sda
+
+# Helper scripts fetched from the OpenWrt wiki and executed by tasks/system.yml.
+# Whatever the wiki serves at run time is what runs -- see the Gotchas section of
+# the collection README.
+extroot_hotplug_extras_url: https://openwrt.org/_export/code/docs/guide-user/advanced/hotplug_extras?codeblock=0
+extroot_opkg_extras_url: https://openwrt.org/_export/code/docs/guide-user/advanced/opkg_extras?codeblock=0

@@ -6,7 +6,7 @@ OpenWRT `wireguard` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `wireguard_pkgs` | List of wireguard packages to be installed | `required` | `list` | `["wireguard-tools", "luci-proto-wireguard", "luci-app-wireguard", "qrencode"]` |
 | `wireguard_interfaces` | List of [wireguard network interfaces](https://openwrt.org/docs/guide-user/services/vpn/wireguard/server#network) to be configured |  | `list of dictionaries` |  |
