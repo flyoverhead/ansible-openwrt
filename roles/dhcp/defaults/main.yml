@@ -1,51 +1,12 @@
 ---
+# Every variable below is empty by default, so the role is a no-op until it is
+# configured. The accepted keys for each entry are documented in README.md.
+
 # dnsmasq section
-dhcp_common:
-  authoritative: ""
-  boguspriv: ""
-  cachesize: ""
-  domain: ""
-  domainneeded: ""
-  dnssec: ""
-  dnsseccheckunsigned: ""
-  expandhosts: ""
-  filterwin2k: ""
-  fqdn: ""
-  leasefile: ""
-  local: ""
-  localise_queries: ""
-  localservice: ""
-  nonegcache: ""
-  nonwildcard: ""
-  readethers: ""
-  rebind_protection: ""
-  rebind_localhost: ""
-  rebind_domain: []
-  resolvfile: ""
-  server: []
-  serverlist: ""
-  address: []
-  allservers: ""
+dhcp_common: {}
 
 # dhcp section
-dhcp_pools:
-  - id: ""
-    interface: ""
-    state: ""
-    dhcp_option: []
-    force: ""
-    dhcpv4: ""
-    leasetime: ""
-    limit: ""
-    start: ""
-    ra: ""
-    dhcpv6: ""
-    dns_service: ""
+dhcp_pools: []
 
 # host section
-dhcp_leases:
-  - id: ""
-    name: ""
-    state: ""
-    ip: ""
-    mac: ""
+dhcp_leases: []

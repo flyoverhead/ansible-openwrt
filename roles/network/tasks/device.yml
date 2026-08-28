@@ -8,10 +8,10 @@
 - name: Delete network device {{ item.id }}
   when: "'absent' in network_device_state"
   uci:
-    command: "absent"
-    config: "network"
+    command: absent
+    config: network
     section: "{{ item.id }}"
-    type: "device"
+    type: device
 
 # Create and configure network device
 - name: Create and configure network device
@@ -20,18 +20,18 @@
     # Create network device
     - name: Create network device {{ item.id | default('@device[-1]') }}
       uci:
-        command: "add"
-        config: "network"
+        command: add
+        config: network
         section: "{{ item.id | default('@device[-1]') }}"
-        type: "device"
+        type: device
 
     # Configure network device
     - name: Configure network device {{ item.id | default('@device[-1]') }}
       uci:
-        command: "set"
-        config: "network"
+        command: set
+        config: network
         section: "{{ item.id | default('@device[-1]') }}"
-        type: "device"
+        type: device
         value:
           name: "{{ item.name | default(omit) }}"
           type: "{{ item.type | default(omit) }}"

@@ -8,10 +8,10 @@
 - name: Delete firewall nat {{ item.id }}
   when: "'absent' in firewall_nat_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "nat"
+    type: nat
 
 # Create and configure firewall nat
 - name: Create and configure firewall nat
@@ -20,18 +20,18 @@
     # Create firewall nat
     - name: Create firewall nat {{ item.id | default('@nat[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@nat[-1]') }}"
-        type: "nat"
+        type: nat
 
     # Configure firewall nat
     - name: Configure firewall nat {{ item.id | default('@nat[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@nat[-1]') }}"
-        type: "nat"
+        type: nat
         value:
           name: "{{ item.name | default(omit) }}"
           src: "{{ item.src | default(omit) }}"

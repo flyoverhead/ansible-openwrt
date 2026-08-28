@@ -2,10 +2,10 @@
 # Configure defaults settings
 - name: Configure defaults settings
   uci:
-    command: "set"
-    config: "firewall"
+    command: set
+    config: firewall
     section: "@defaults[0]"
-    type: "defaults"
+    type: defaults
     value:
       input: "{{ firewall_defaults.input | default(omit) }}"
       forward: "{{ firewall_defaults.forward | default(omit) }}"

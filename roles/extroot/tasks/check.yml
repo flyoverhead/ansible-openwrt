@@ -6,19 +6,24 @@
     extroot_configure: false
 
 # Check current extroot status
+# `uci get` fails with "Entry not found" when fstab has no mount at all, which is
+# the state a device is in before extroot has ever been set up -- so only a
+# different error is a real failure. The message lands in `msg`, not `result`.
 - name: Check current extroot status
   uci:
-    command: "get"
-    config: "fstab"
+    command: get
+    config: fstab
     section: "@mount[0].target"
-    type: "mount"
+    type: mount
   register: extroot_status
   failed_when: >
-    extroot_status.result is undefined and
-    'Entry not found' not in extroot_status.result
+    extroot_status.failed | default(false) and
+    'Entry not found' not in extroot_status.msg | default('')
 
 # Set extroot status fact
+# No mount, or a mount pointing somewhere other than the target device, means
+# extroot still has to be configured
 - name: Set extroot status fact
   ansible.builtin.set_fact:
     extroot_configure: true
-  when: extroot_device not in extroot_status.result
+  when: extroot_device not in extroot_status.result | default('')

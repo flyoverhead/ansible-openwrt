@@ -2,23 +2,23 @@
 # Configure dropbear settings
 - name: Configure dropbear settings
   uci:
-    command: "set"
-    config: "dropbear"
+    command: set
+    config: dropbear
     section: "@dropbear[0]"
-    type: "dropbear"
+    type: dropbear
     value:
-      enable: "{{ dropbear.enable | default(omit) }}"
-      verbose: "{{ dropbear.verbose | default(omit) }}"
-      BannerFile: "{{ dropbear.BannerFile | default(omit) }}"
-      PasswordAuth: "{{ dropbear.PasswordAuth | default(omit) }}"
-      Port: "{{ dropbear.Port | default(omit) }}"
-      RootPasswordAuth: "{{ dropbear.RootPasswordAuth | default(omit) }}"
-      RootLogin: "{{ dropbear.RootLogin | default(omit) }}"
-      GatewayPorts: "{{ dropbear.GatewayPorts | default(omit) }}"
-      Interface: "{{ dropbear.Interface | default(omit) }}"
-      keyfile: "{{ dropbear.keyfile | default(omit) }}"
-      SSHKeepAlive: "{{ dropbear.SSHKeepAlive | default(omit) }}"
-      IdleTimeout: "{{ dropbear.IdleTimeout | default(omit) }}"
-      mdns: "{{ dropbear.mdns | default(omit) }}"
-      MaxAuthTries: "{{ dropbear.MaxAuthTries | default(omit) }}"
-      RecvWindowSize: "{{ dropbear.RecvWindowSize | default(omit) }}"
+      enable: "{{ dropbear_settings.enable | default(omit) }}"
+      verbose: "{{ dropbear_settings.verbose | default(omit) }}"
+      BannerFile: "{{ dropbear_settings.BannerFile | default(omit) }}"
+      PasswordAuth: "{{ dropbear_settings.PasswordAuth | default(omit) }}"
+      Port: "{{ dropbear_settings.Port | default(omit) }}"
+      RootPasswordAuth: "{{ dropbear_settings.RootPasswordAuth | default(omit) }}"
+      RootLogin: "{{ dropbear_settings.RootLogin | default(omit) }}"
+      GatewayPorts: "{{ dropbear_settings.GatewayPorts | default(omit) }}"
+      Interface: "{{ dropbear_settings.Interface | default(omit) }}"
+      keyfile: "{{ dropbear_settings.keyfile | default(omit) }}"
+      SSHKeepAlive: "{{ dropbear_settings.SSHKeepAlive | default(omit) }}"
+      IdleTimeout: "{{ dropbear_settings.IdleTimeout | default(omit) }}"
+      mdns: "{{ dropbear_settings.mdns | default(omit) }}"
+      MaxAuthTries: "{{ dropbear_settings.MaxAuthTries | default(omit) }}"
+      RecvWindowSize: "{{ dropbear_settings.RecvWindowSize | default(omit) }}"

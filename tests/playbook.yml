@@ -1,0 +1,48 @@
+---
+
+# The host group MUST be named `openwrt`: the gekmihesg.openwrt vars plugin only
+# rewrites `ansible.builtin.*` to the shell modules for hosts in that group, and
+# these devices have no Python for the stock modules to run on.
+# https://github.com/gekmihesg/ansible-openwrt#ansible-role-openwrt
+- name: configure openwrt devices
+  hosts: openwrt
+  ignore_unreachable: true
+  gather_facts: false
+  tags: configure_openwrt
+
+  pre_tasks:
+    - name: Update package cache
+      ansible.builtin.command:
+        cmd: opkg update
+      changed_when: false
+
+  roles:
+
+    # must run first: it moves the overlay onto USB and reboots, so anything
+    # committed before it would be written to the old overlay
+    - role: extroot
+
+    - role: system
+    - role: network
+
+    # batman and mesh11sd are alternative mesh implementations -- each is a
+    # no-op unless its own enable flag is set, so both can stay listed here
+    - role: batman
+    - role: mesh11sd
+
+    - role: wireless
+    - role: wireguard
+    - role: firewall
+    - role: pbr
+    - role: dropbear
+    - role: dhcp
+    - role: node_exporter
+
+  post_tasks:
+    # The device drops the connection mid-command, so a non-zero rc here is
+    # expected and does not mean the reboot failed
+    - name: Reboot device
+      ansible.builtin.command:
+        cmd: reboot
+      changed_when: true
+      failed_when: false

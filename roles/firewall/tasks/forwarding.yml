@@ -8,10 +8,10 @@
 - name: Delete firewall forwarding {{ item.id }}
   when: "'absent' in firewall_forwarding_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "forwarding"
+    type: forwarding
 
 # Create and configure firewall forwarding
 - name: Create and configure firewall forwarding
@@ -20,18 +20,18 @@
     # Create firewall forwarding
     - name: Create firewall forwarding {{ item.id | default('@forwarding[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@forwarding[-1]') }}"
-        type: "forwarding"
+        type: forwarding
 
     # Configure firewall forwarding
     - name: Configure firewall forwarding {{ item.id | default('@forwarding[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@forwarding[-1]') }}"
-        type: "forwarding"
+        type: forwarding
         value:
           name: "{{ item.id | default(omit) }}"
           src: "{{ item.src | default(omit) }}"

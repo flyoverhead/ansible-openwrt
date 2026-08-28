@@ -1,10 +1,35 @@
 ---
-version: "3"
+
+version: '3'
+
+silent: true
 
 tasks:
-  test:
-    dir: test
+
+  install:
+    desc: Install the collection and role dependencies
     cmds:
-      - echo "Run test playbook for opewnrt devices"
-      - ansible-galaxy install -r requirements.yml
-      - ansible-playbook --inventory inventory.yml playbook.yml
+      - ansible-galaxy collection install -r requirements.yml
+      - ansible-galaxy role install -r requirements.yml -p .ansible/roles
+      - pip install -r requirements.txt
+
+  lint:
+    desc: Run the linters over the collection
+    cmds:
+      - pre-commit run --all-files
+
+  build:
+    desc: Build the collection tarball
+    cmds:
+      - ansible-galaxy collection build --force
+
+  provision:
+    desc: Run the playbook against the devices in tests/inventory.yml
+    cmds:
+      - task: play
+
+  play:
+    dir: tests
+    internal: true
+    cmds:
+      - ansible-playbook -i inventory.yml playbook.yml

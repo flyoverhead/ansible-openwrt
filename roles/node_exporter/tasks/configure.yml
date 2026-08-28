@@ -2,10 +2,10 @@
 # Configure node-exporter settings
 - name: Configure node_exporter settings
   uci:
-    command: "set"
-    config: "prometheus-node-exporter-lua"
-    section: "main"
-    type: "prometheus-node-exporter-lua"
+    command: set
+    config: prometheus-node-exporter-lua
+    section: main
+    type: prometheus-node-exporter-lua
     value:
       listen_interface: "{{ node_exporter_settings.listen_interface | default(omit) }}"
       listen_port: "{{ node_exporter_settings.listen_port | default(omit) }}"

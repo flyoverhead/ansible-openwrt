@@ -2,14 +2,15 @@
 # Configure dropbear section
 - name: Configure dropbear section
   ansible.builtin.include_tasks: dropbear.yml
+  when: dropbear_settings | length > 0
 
 # Copy SSH authorized keys
 - name: Copy ssh authorized keys
   ansible.builtin.copy:
-    src: "authorized_keys"
-    dest: "/etc/dropbear/authorized_keys"
-    owner: "root"
-    group: "root"
+    src: authorized_keys
+    dest: /etc/dropbear/authorized_keys
+    owner: root
+    group: root
     mode: "0600"
     force: true
 

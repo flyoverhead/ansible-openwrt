@@ -6,7 +6,7 @@ OpenWRT `network` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `network_globals` | [Global network configuration options](https://openwrt.org/docs/guide-user/base-system/basic-networking#global_section) |  | `dictionary` |  |
 | &emsp;`network_ula_prefix` | IPv6 ULA prefix (`IPv6-prefix` or `auto`) | `optional` | `string` | `auto` |

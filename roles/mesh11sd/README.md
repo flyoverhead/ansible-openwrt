@@ -5,11 +5,11 @@ OpenWRT `mesh` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
-| `mesh_enabled` | Enable mesh configuration | `required` | `boolean` | `false` |
-| `ath10k_ct_fix` | Enable [ath10k-ct drivers fix](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support) | `optional` | `boolean` | `false` |
-| `non_mesh_pkgs` | List of non-mesh wpad packages installed by default | `required` | `list` | `["wpad-mini", "wpad-basic", "wpad-basic-wolfssl", "wpad-basic-openssl", "wpad-basic-mbedtls"]` |
+| `mesh11sd_enabled` | Enable mesh configuration | `required` | `boolean` | `false` |
+| `mesh11sd_ath10k_ct_fix` | Enable [ath10k-ct drivers fix](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support) | `optional` | `boolean` | `false` |
+| `mesh11sd_non_mesh_pkgs` | List of non-mesh wpad packages installed by default | `required` | `list` | `["wpad-mini", "wpad-basic", "wpad-basic-wolfssl", "wpad-basic-openssl", "wpad-basic-mbedtls"]` |
 | `mesh_pkgs` | List of mesh wpad packages to be installed | `required` | `list` | `["wpad-mesh-wolfssl", "mesh11sd"]` |
 | `mesh11sd_interfaces` | List of [wireless interfaces](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#the_wireless_uci_config_file) to be configured as mesh nodes |  | `list of dictionaries` |  |
 | &emsp;`id` | Unique interface ID | `mandatory` | `string` | `mesh` |
@@ -46,8 +46,8 @@ OpenWRT `mesh` configuration
 ## Example Vars
 
 ```yaml
-mesh_enabled: true
-ath10k_ct_fix: true
+mesh11sd_enabled: true
+mesh11sd_ath10k_ct_fix: true
 mesh11sd_interfaces:
   - id: "mesh0"
     name: "mesh0"

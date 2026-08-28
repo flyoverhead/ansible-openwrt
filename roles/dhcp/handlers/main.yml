@@ -4,4 +4,4 @@
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
-  loop: ["dnsmasq", "odhcpd"]
+  loop: [dnsmasq, odhcpd]

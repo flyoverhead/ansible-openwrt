@@ -8,10 +8,10 @@
 - name: Delete network interface {{ item.id }}
   when: "'absent' in network_interface_state"
   uci:
-    command: "absent"
-    config: "network"
+    command: absent
+    config: network
     section: "{{ item.id }}"
-    type: "interface"
+    type: interface
 
 # Create and configure network interface
 - name: Create and configure network interface
@@ -20,18 +20,18 @@
     # Create network interface
     - name: Create network interface {{ item.id }}
       uci:
-        command: "add"
-        config: "network"
+        command: add
+        config: network
         section: "{{ item.id }}"
-        type: "interface"
+        type: interface
 
     # Configure network interface
     - name: Configure network interface {{ item.id }}
       uci:
-        command: "set"
-        config: "network"
+        command: set
+        config: network
         section: "{{ item.id }}"
-        type: "interface"
+        type: interface
         value:
           device: "{{ item.device | default(omit) }}"
           proto: "{{ item.proto | default(omit) }}"

@@ -1,7 +1,8 @@
 ---
-# Configure deaults section
+# Configure defaults section
 - name: Configure defaults section
   ansible.builtin.include_tasks: defaults.yml
+  when: firewall_defaults | length > 0
 
 # Configure zone section
 - name: Configure zone section

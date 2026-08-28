@@ -5,11 +5,11 @@ OpenWRT `B.A.T.M.A.N.` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `batman_enabled` | Enable B.A.T.M.A.N. configuration | `required` | `boolean` | `false` |
-| `ath10k_ct_fix` | Enable [ath10k-ct drivers fix](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support) | `optional` | `boolean` | `false` |
-| `non_mesh_pkgs` | List of non-mesh wpad packages installed by default | `required` | `list` | `["wpad-mini", "wpad-basic", "wpad-basic-wolfssl", "wpad-basic-openssl", "wpad-basic-mbedtls"]` |
+| `batman_ath10k_ct_fix` | Enable [ath10k-ct drivers fix](https://openwrt.org/docs/guide-user/network/wifi/mesh/80211s#wireless_hardware_support) | `optional` | `boolean` | `false` |
+| `batman_non_mesh_pkgs` | List of non-mesh wpad packages installed by default | `required` | `list` | `["wpad-mini", "wpad-basic", "wpad-basic-wolfssl", "wpad-basic-openssl", "wpad-basic-mbedtls"]` |
 | `batman_pkgs` | List of B.A.T.M.A.N. packages to be installed | `required` | `list` | `["wpad-mesh-wolfssl", "kmod-batman-adv", "batctl-default"]` |
 | `batman_network_interfaces` | List of [B.A.T.M.A.N. network interfaces](https://openwrt.org/docs/guide-user/network/wifi/mesh/batman#batman-adv_options_for_bat0_the_main_mesh_interface) to be configured |  | `list of dictionaries` |  |
 |  | B.A.T.M.A.N. control interface configuration |  |  |  |
@@ -73,7 +73,7 @@ OpenWRT `B.A.T.M.A.N.` configuration
 
 ```yaml
 batman_enabled: true
-ath10k_ct_fix: true
+batman_ath10k_ct_fix: true
 batman_network_interfaces:
   - id: "bat0"
     state: "present"
@@ -103,7 +103,7 @@ batman_wireless_interfaces:
 
 ```yaml
 batman_enabled: true
-ath10k_ct_fix: true
+batman_ath10k_ct_fix: true
 batman_network_interfaces:
   - id: "bat0"
     state: "present"

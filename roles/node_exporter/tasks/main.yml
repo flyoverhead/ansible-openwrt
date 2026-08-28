@@ -6,8 +6,9 @@
 # Configure node-exporter service
 - name: Configure node_exporter service
   ansible.builtin.include_tasks: configure.yml
+  when: node_exporter_settings | length > 0
 
-# Apply changes and reload wireless service
+# Apply changes and reload node_exporter service
 - name: Apply changes and reload node_exporter service
   uci:
     command: commit

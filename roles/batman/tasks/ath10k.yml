@@ -1,64 +1,67 @@
 ---
 # Don't replace current driver until it's not a *-ct one
-- name: Set default extroot status fact to false
+- name: Set default driver replacement fact to false
   ansible.builtin.set_fact:
-    replace_ath10k_ct_driver: false
+    batman_replace_ath10k_ct_driver: false
 
 # Check current driver release
-- name: Check current ath10k firmware release
+# `grep` exits 1 when nothing matches, which is a valid answer here, not a failure
+- name: Check current ath10k firmware release  # noqa: inline-env-var
   ansible.builtin.command:
-    cmd: "opkg list-installed | grep ath10k-firmware | awk '{print $1}'"
+    cmd: "opkg list-installed | grep ath10k-firmware | awk '{print $1}'"  # yamllint disable-line rule:quoted-strings
     uses_shell: true
-  register: ath10k_firmware_current_release
-  changed_when: ath10k_firmware_current_release.rc != 0
+  register: batman_ath10k_firmware_current_release
+  changed_when: false
+  failed_when: false
 
 # Enable reinstall if installed driver contain *-ct postfix
 - name: Enable replacement of current driver
   ansible.builtin.set_fact:
-    replace_ath10k_ct_driver: true
-  when: "'-ct' in ath10k_firmware_current_release.stdout"
+    batman_replace_ath10k_ct_driver: true
+  when: "'-ct' in batman_ath10k_firmware_current_release.stdout"
 
 # Replace current driver with new one
 - name: Replace ath10k-ct firmware and module
-  when: replace_ath10k_ct_driver
+  when: batman_replace_ath10k_ct_driver
   block:
     # Get current ath10k module package name
-    - name: Check current ath10k module release
+    - name: Check current ath10k module release  # noqa: inline-env-var
       ansible.builtin.command:
-        cmd: "opkg list-installed | grep kmod-ath10k | awk '{print $1}'"
+        cmd: "opkg list-installed | grep kmod-ath10k | awk '{print $1}'"  # yamllint disable-line rule:quoted-strings
         uses_shell: true
-      register: ath10k_kmod_current_release
+      register: batman_ath10k_kmod_current_release
+      changed_when: false
 
     # Set current ath10k module package name fact
     - name: Set current ath10k module release fact
       ansible.builtin.set_fact:
-        ath10k_kmod_pkg_name: "{{ ath10k_kmod_current_release.stdout }}"
+        batman_ath10k_kmod_pkg_name: "{{ batman_ath10k_kmod_current_release.stdout }}"
 
     # Set current driver release name fact
     - name: Set current driver release name fact
       ansible.builtin.set_fact:
-        ath10k_driver_pkg_name: "{{ ath10k_firmware_current_release.stdout }}"
+        batman_ath10k_driver_pkg_name: "{{ batman_ath10k_firmware_current_release.stdout }}"
 
     # Remove current driver
     - name: Remove current driver
       opkg:
         name: "{{ item }}"
-        state: "absent"
-      loop: ["{{ ath10k_kmod_pkg_name }}", "{{ ath10k_driver_pkg_name }}"]
+        state: absent
+      loop: ["{{ batman_ath10k_kmod_pkg_name }}", "{{ batman_ath10k_driver_pkg_name }}"]
 
     # Update opkg cache
     - name: Update opkg cache
       ansible.builtin.command:
-        cmd: "opkg update"
+        cmd: opkg update
       changed_when: false
 
     # Install new driver
     - name: Install new driver
       opkg:
         name: "{{ item }}"
-        state: "present"
+        state: present
       loop:
         [
-          "{{ ath10k_kmod_pkg_name | regex_replace('-?ct', '') }}",
-          "{{ ath10k_driver_pkg_name | regex_replace('-?ct', '') }}",
+          "{{ batman_ath10k_kmod_pkg_name | regex_replace('-?ct', '') }}",
+          "{{ batman_ath10k_driver_pkg_name | regex_replace('-?ct', '') }}",
         ]

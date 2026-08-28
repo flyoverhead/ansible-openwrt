@@ -2,21 +2,21 @@
 # Configure system settings
 - name: Configure system settings
   uci:
-    command: "set"
-    config: "system"
+    command: set
+    config: system
     section: "@system[0]"
-    type: "system"
+    type: system
     value:
-      hostname: "{{ system.hostname | default(omit) }}"
-      description: "{{ system.description | default(omit) }}"
-      klogconloglevel: "{{ system.klogconloglevel | default(omit) }}"
-      log_file: "{{ system.log_file | default(omit) }}"
-      log_hostname: "{{ system.log_hostname | default(omit) }}"
-      log_ip: "{{ system.log_ip | default(omit) }}"
-      log_port: "{{ system.log_port | default(omit) }}"
-      log_proto: "{{ system.log_proto | default(omit) }}"
-      log_remote: "{{ system.log_remote | default(omit) }}"
-      log_size: "{{ system.log_size | default(omit) }}"
-      log_type: "{{ system.log_type | default(omit) }}"
-      timezone: "{{ system.timezone | default(omit) }}"
-      zonename: "{{ system.zonename | default(omit) }}"
+      hostname: "{{ system_settings.hostname | default(omit) }}"
+      description: "{{ system_settings.description | default(omit) }}"
+      klogconloglevel: "{{ system_settings.klogconloglevel | default(omit) }}"
+      log_file: "{{ system_settings.log_file | default(omit) }}"
+      log_hostname: "{{ system_settings.log_hostname | default(omit) }}"
+      log_ip: "{{ system_settings.log_ip | default(omit) }}"
+      log_port: "{{ system_settings.log_port | default(omit) }}"
+      log_proto: "{{ system_settings.log_proto | default(omit) }}"
+      log_remote: "{{ system_settings.log_remote | default(omit) }}"
+      log_size: "{{ system_settings.log_size | default(omit) }}"
+      log_type: "{{ system_settings.log_type | default(omit) }}"
+      timezone: "{{ system_settings.timezone | default(omit) }}"
+      zonename: "{{ system_settings.zonename | default(omit) }}"

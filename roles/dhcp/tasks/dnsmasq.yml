@@ -2,10 +2,10 @@
 # Configure common options
 - name: Configure common options
   uci:
-    command: "set"
-    config: "dhcp"
+    command: set
+    config: dhcp
     section: "@dnsmasq[0]"
-    type: "dnsmasq"
+    type: dnsmasq
     value:
       authoritative: "{{ dhcp_common.authoritative | default(omit) }}"
       boguspriv: "{{ dhcp_common.boguspriv | default(omit) }}"

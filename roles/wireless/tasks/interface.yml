@@ -8,10 +8,10 @@
 - name: Delete wireless interface {{ item.id }}
   when: "'absent' in wireless_interface_state"
   uci:
-    command: "absent"
-    config: "wireless"
+    command: absent
+    config: wireless
     section: "{{ item.id }}"
-    type: "wifi-iface"
+    type: wifi-iface
 
 # Create and configure wireless interface
 - name: Create and configure wireless interface
@@ -20,28 +20,31 @@
     # Create wireless interface
     - name: Create wireless interface {{ item.id }}
       uci:
-        command: "add"
-        config: "wireless"
+        command: add
+        config: wireless
         section: "{{ item.id }}"
-        type: "wifi-iface"
+        type: wifi-iface
 
     # Generate mobility domain identifier
-    - name: Generate mobility domain identifier
+    # 802.11r needs every AP sharing an SSID to advertise the same domain, so it
+    # is derived from the SSID rather than configured per device
+    - name: Generate mobility domain identifier  # noqa: inline-env-var
       ansible.builtin.command:
-        cmd: "echo -n {{ item.ssid }} | md5sum | cut -c-4"
+        cmd: echo -n {{ item.ssid }} | md5sum | cut -c-4
         uses_shell: true
-      register: mobility_domain_identifier
+      register: wireless_mobility_domain_identifier
+      changed_when: false
       when: >
-        (mobility_domain is defined and mobility_domain == 1) and
+        (item.mobility_domain is defined and item.mobility_domain | int == 1) and
         (item.ssid is defined and item.ssid | length > 0)
 
     # Configure wireless interface
     - name: Configure wireless interface {{ item.id }}
       uci:
-        command: "set"
-        config: "wireless"
+        command: set
+        config: wireless
         section: "{{ item.id }}"
-        type: "wifi-iface"
+        type: wifi-iface
         value:
           ifname: "{{ item.name | default(omit) }}"
           device: "{{ item.device | default(omit) }}"
@@ -57,6 +60,6 @@
           macfilter: "{{ item.macfilter | default(omit) }}"
           maclist: "{{ item.maclist | default([]) | join(' ') }}"
           ieee80211r: "{{ item.ieee80211r | default(omit) }}"
-          mobility_domain: "{{ mobility_domain_identifier.stdout | default(omit) }}"
+          mobility_domain: "{{ wireless_mobility_domain_identifier.stdout | default(omit) }}"
           ft_over_ds: "{{ item.ft_over_ds | default(omit) }}"
           ft_psk_generate_local: "{{ item.ft_psk_generate_local | default(omit) }}"

@@ -2,12 +2,12 @@
 # Update opkg cache
 - name: Update opkg cache
   ansible.builtin.command:
-    cmd: "opkg update"
+    cmd: opkg update
   changed_when: false
 
 # Install node-exporter packages
 - name: Install node_exporter packages
   opkg:
     name: "{{ item }}"
-    state: "present"
+    state: present
   loop: "{{ node_exporter_pkgs }}"

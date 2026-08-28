@@ -5,7 +5,7 @@ OpenWRT `Prometheus node-exporter` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Default/Example |
+| Variable | Description | Status | Type | Default/Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `node_exporter_pkgs` | List of node-exporter packages to be installed | `required` | `list` | `  ["prometheus-node-exporter-lua", "prometheus-node-exporter-lua-nat_traffic", "prometheus-node-exporter-lua-netstat", "prometheus-node-exporter-lua-openwrt", "prometheus-node-exporter-lua-wifi", "prometheus-node-exporter-lua-wifi_stations",]` |
 | `node_exporter_settings` | Prometheus node-exporter settings configuration |  | `dictionary` |  |

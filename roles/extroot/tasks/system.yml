@@ -1,55 +1,54 @@
 ---
 # Copy overlay partition content to external USB device
-- name: Copy overlay content to external usb device
+- name: Copy overlay content to external usb device  # noqa: inline-env-var
   ansible.builtin.command:
     cmd: "{{ item }}"
     uses_shell: true
   loop:
-    [
-      "mount /dev/{{ extroot_device }}1 /mnt",
-      "tar -C /overlay -cvf - . | tar -C /mnt -xf -",
-      "umount /mnt",
-    ]
+    - mount /dev/{{ extroot_device }}1 /mnt
+    - tar -C /overlay -cvf - . | tar -C /mnt -xf -
+    - umount /mnt
   loop_control:
     label: "{{ item }}"
+  changed_when: true
 
 # Configure hotplug extras
+# Fetched from the OpenWrt wiki at run time, so the content is whatever the wiki
+# serves that day -- see the References section of the role README
 - name: Configure hotplug extras
   ansible.builtin.command:
     cmd: "{{ item }}"
-    chdir: "/tmp"
+    chdir: /tmp
   loop:
-    [
-      'uclient-fetch -O hotplug-extras.sh "https://openwrt.org/_export/code/docs/guide-user/advanced/hotplug_extras?codeblock=0"',
-      "chmod +x ./hotplug-extras.sh",
-      ./hotplug-extras.sh,
-    ]
+    - uclient-fetch -O hotplug-extras.sh "{{ extroot_hotplug_extras_url }}"
+    - chmod +x ./hotplug-extras.sh
+    - ./hotplug-extras.sh
+  changed_when: true
 
 # Configure opkg extras
 - name: Configure opkg extras
   ansible.builtin.command:
     cmd: "{{ item }}"
-    chdir: "/tmp"
+    chdir: /tmp
   loop:
-    [
-      'uclient-fetch -O opkg-extras.sh "https://openwrt.org/_export/code/docs/guide-user/advanced/opkg_extras?codeblock=0"',
-      "chmod +x ./opkg-extras.sh",
-      ./opkg-extras.sh,
-    ]
+    - uclient-fetch -O opkg-extras.sh "{{ extroot_opkg_extras_url }}"
+    - chmod +x ./opkg-extras.sh
+    - ./opkg-extras.sh
+  changed_when: true
 
 # Configure extroot auto restore
 - name: Configure extroot auto restore
   ansible.builtin.copy:
-    src: "90-extroot-restore"
-    dest: "/etc/uci-defaults/90-extroot-restore"
-    owner: "root"
-    group: "root"
+    src: 90-extroot-restore
+    dest: /etc/uci-defaults/90-extroot-restore
+    owner: root
+    group: root
     mode: "0644"
 
 # Add auto restore to sysupgrade configuration
 - name: Add auto restore to sysupgrade.conf
   ansible.builtin.lineinfile:
-    path: "/etc/sysupgrade.conf"
-    line: "/etc/uci-defaults"
-    insertafter: "EOF"
-    state: "present"
+    path: /etc/sysupgrade.conf
+    line: /etc/uci-defaults
+    insertafter: EOF
+    state: present

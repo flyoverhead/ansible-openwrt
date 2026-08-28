@@ -1,8 +1,0 @@
----
-collections:
-  - name: flyoverhead.openwrt
-    type: dir
-    source: ..
-
-roles:
-  - name: gekmihesg.openwrt

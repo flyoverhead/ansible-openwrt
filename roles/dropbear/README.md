@@ -5,9 +5,9 @@ OpenWRT `dropbear` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Example |
+| Variable | Description | Status | Type | Example |
 | :--- | :--- | :--- | :--- | :--- |
-| `dropbear` | Dropbear settings configuration |  | `dictionary` |  |
+| `dropbear_settings` | Dropbear settings configuration |  | `dictionary` |  |
 | &emsp;`enable` | Enable starting dropbear at system boot | `required` | `boolean` | `1` |
 | &emsp;`verbose` | Enable verbose output by the start scrip | `optional` | `boolean` | `0` |
 | &emsp;`BannerFile` | Name of a file to be printed before the user has authenticated successfully | `optional` | `string` | `7` |

@@ -1,18 +1,6 @@
 ---
-# system section
-dropbear:
-  enable: ""
-  verbose: ""
-  BannerFile: ""
-  PasswordAuth: ""
-  Port: ""
-  RootPasswordAuth: ""
-  RootLogin: ""
-  GatewayPorts: ""
-  Interface: ""
-  keyfile: ""
-  SSHKeepAlive: ""
-  IdleTimeout: ""
-  mdns: ""
-  MaxAuthTries: ""
-  RecvWindowSize: ""
+# Empty by default, so the role is a no-op until it is configured. The accepted
+# keys are documented in README.md.
+
+# dropbear section
+dropbear_settings: {}

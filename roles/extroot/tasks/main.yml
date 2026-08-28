@@ -32,7 +32,7 @@
     - name: Commit changes
       uci:
         command: commit
-      notify: ["Reboot device", "Wait for device to boot up"]
+      notify: [Reboot device, Wait for device to boot up]
 
     # Reboot device
     - name: Reboot device

@@ -2,10 +2,10 @@
 # Configure service settings
 - name: Configure service settings
   uci:
-    command: "set"
-    config: "pbr"
-    section: "config"
-    type: "pbr"
+    command: set
+    config: pbr
+    section: config
+    type: pbr
     value:
       enabled: "{{ pbr_service.enabled | default(omit) }}"
       verbosity: "{{ pbr_service.verbosity | default(omit) }}"

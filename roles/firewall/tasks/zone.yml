@@ -8,10 +8,10 @@
 - name: Delete firewall zone {{ item.id }}
   when: "'absent' in firewall_zone_state"
   uci:
-    command: "absent"
-    config: "firewall"
+    command: absent
+    config: firewall
     section: "{{ item.id }}"
-    type: "zone"
+    type: zone
 
 # Create and configure firewall zone
 - name: Create and configure firewall zone
@@ -20,18 +20,18 @@
     # Create firewall zone
     - name: Create firewall zone {{ item.id | default('@zone[-1]') }}
       uci:
-        command: "add"
-        config: "firewall"
+        command: add
+        config: firewall
         section: "{{ item.id | default('@zone[-1]') }}"
-        type: "zone"
+        type: zone
 
     # Configure firewall zone
     - name: Configure firewall zone {{ item.id | default('@zone[-1]') }}
       uci:
-        command: "set"
-        config: "firewall"
+        command: set
+        config: firewall
         section: "{{ item.id | default('@zone[-1]') }}"
-        type: "zone"
+        type: zone
         value:
           name: "{{ item.name | default(omit) }}"
           network: "{{ item.network | default([]) | join(' ') }}"

@@ -6,6 +6,7 @@
 # Configure pbr service settings
 - name: Configure pbr service settings
   ansible.builtin.include_tasks: service.yml
+  when: pbr_service | length > 0
 
 # Configure pbr policies
 - name: Configure pbr policies

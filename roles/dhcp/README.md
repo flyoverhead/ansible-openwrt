@@ -8,7 +8,7 @@ OpenWRT `dhcp` configuration
 
 ## Role Variables
 
-| Variable | Descritpion | Status | Type | Example |
+| Variable | Description | Status | Type | Example |
 | :--- | :--- | :--- | :--- | :--- |
 | `dhcp_common` | DHCP and DNS [common options](https://openwrt.org/docs/guide-user/base-system/dhcp#common_options) |  | `dictionary` |  |
 | &emsp;`authoritative` | Force dnsmasq into authoritative mode (used if this is the only server on the network) | `required` | `boolean` | `1` |
