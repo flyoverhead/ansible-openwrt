@@ -1,10 +1,8 @@
 ---
-# Set state status for network interface
 - name: Set state status for network interface {{ item.id }}
   ansible.builtin.set_fact:
     network_interface_state: "{{ item.state | default('present') }}"
 
-# Delete network interface
 - name: Delete network interface {{ item.id }}
   when: "'absent' in network_interface_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: interface
 
-# Create and configure network interface
 - name: Create and configure network interface
   when: "'present' in network_interface_state"
   block:
-    # Create network interface
     - name: Create network interface {{ item.id }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id }}"
         type: interface
 
-    # Configure network interface
     - name: Configure network interface {{ item.id }}
       uci:
         command: set

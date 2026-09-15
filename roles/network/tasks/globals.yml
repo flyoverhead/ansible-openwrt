@@ -1,5 +1,4 @@
 ---
-# Configure globals settings
 - name: Configure globals settings
   uci:
     command: set

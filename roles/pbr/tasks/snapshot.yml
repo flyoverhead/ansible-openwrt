@@ -11,7 +11,6 @@
   changed_when: false
   failed_when: false
 
-# Set package file name fact
 - name: Set package file name fact
   ansible.builtin.set_fact:
     pbr_snapshot_package_name: "{{ pbr_snapshot_package_file_name.stdout }}"
@@ -28,14 +27,12 @@
         chdir: /tmp
       changed_when: true
 
-    # Install package file
     - name: Install package from file {{ pbr_snapshot_package_name }}
       ansible.builtin.command:
         cmd: opkg install {{ pbr_snapshot_package_name }}
         chdir: /tmp
       changed_when: true
 
-    # Clean package file
     - name: Clean package file {{ pbr_snapshot_package_name }}
       ansible.builtin.file:
         path: /tmp/{{ pbr_snapshot_package_name }}

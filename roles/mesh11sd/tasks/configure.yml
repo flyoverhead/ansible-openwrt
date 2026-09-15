@@ -1,5 +1,4 @@
 ---
-# Configure mesh parameters
 - name: Configure mesh parameters
   uci:
     command: set

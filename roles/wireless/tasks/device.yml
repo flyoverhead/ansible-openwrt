@@ -1,5 +1,4 @@
 ---
-# Configure wireless device
 - name: Configure wireless device {{ item.id }}
   uci:
     command: set

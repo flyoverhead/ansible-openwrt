@@ -1,5 +1,4 @@
 ---
-# Reboot device
 # The device drops the connection mid-command, so a non-zero rc here is expected
 # and does not mean the reboot failed
 - name: Reboot device
@@ -8,7 +7,6 @@
   changed_when: true
   failed_when: false
 
-# Wait for device to boot up
 - name: Wait for device to boot up
   ansible.builtin.wait_for_connection:
     delay: 30

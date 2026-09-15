@@ -1,10 +1,8 @@
 ---
-# Set state status for firewall redirect
 - name: Set state status for firewall redirect {{ item.id | default('@redirect[-1]') }}
   ansible.builtin.set_fact:
     firewall_redirect_state: "{{ item.state | default('present') }}"
 
-# Delete firewall redirect
 - name: Delete firewall redirect {{ item.id }}
   when: "'absent' in firewall_redirect_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: redirect
 
-# Create and configure firewall redirect
 - name: Create and configure firewall redirect
   when: "'present' in firewall_redirect_state"
   block:
-    # Create firewall redirect
     - name: Create firewall redirect {{ item.id | default('@redirect[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@redirect[-1]') }}"
         type: redirect
 
-    # Configure firewall redirect
     - name: Configure firewall redirect {{ item.id | default('@redirect[-1]') }}
       uci:
         command: set

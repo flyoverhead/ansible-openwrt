@@ -1,5 +1,4 @@
 ---
-# Reload pbr service
 - name: Reload pbr
   ansible.builtin.service:
     name: pbr

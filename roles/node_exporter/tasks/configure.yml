@@ -1,5 +1,4 @@
 ---
-# Configure node-exporter settings
 - name: Configure node_exporter settings
   uci:
     command: set

@@ -1,5 +1,4 @@
 ---
-# Configure common options
 - name: Configure common options
   uci:
     command: set

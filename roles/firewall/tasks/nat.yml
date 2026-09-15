@@ -1,10 +1,8 @@
 ---
-# Set state status for firewall nat
 - name: Set state status for firewall nat {{ item.id | default('@nat[-1]') }}
   ansible.builtin.set_fact:
     firewall_nat_state: "{{ item.state | default('present') }}"
 
-# Delete firewall nat
 - name: Delete firewall nat {{ item.id }}
   when: "'absent' in firewall_nat_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: nat
 
-# Create and configure firewall nat
 - name: Create and configure firewall nat
   when: "'present' in firewall_nat_state"
   block:
-    # Create firewall nat
     - name: Create firewall nat {{ item.id | default('@nat[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@nat[-1]') }}"
         type: nat
 
-    # Configure firewall nat
     - name: Configure firewall nat {{ item.id | default('@nat[-1]') }}
       uci:
         command: set

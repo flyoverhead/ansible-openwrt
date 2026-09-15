@@ -1,10 +1,8 @@
 ---
-# Set static lease state status for host
 - name: Set static lease state status for host {{ item.id }}
   ansible.builtin.set_fact:
     dhcp_static_lease_state: "{{ item.state | default('present') }}"
 
-# Delete static lease for host
 - name: Delete static lease for host {{ item.id }}
   when: "'absent' in dhcp_static_lease_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: host
 
-# Create and configure static lease for host
 - name: Create and configure static lease for host
   when: "'present' in dhcp_static_lease_state"
   block:
-    # Create static lease for host
     - name: Create static lease for host {{ item.id }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@host[-1]') }}"
         type: host
 
-    # Configure static lease for host
     - name: Configure static lease for host {{ item.id }}
       uci:
         command: set

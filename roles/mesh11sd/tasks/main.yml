@@ -5,12 +5,10 @@
   ansible.builtin.include_tasks: ath10k.yml
   when: mesh11sd_enabled and mesh11sd_ath10k_ct_fix
 
-# Install required packages
 - name: Install required packages
   ansible.builtin.include_tasks: prepare.yml
   when: mesh11sd_enabled
 
-# Create mesh interface
 - name: Create mesh interface
   ansible.builtin.include_role:
     name: wireless
@@ -18,12 +16,10 @@
     wireless_interfaces: "{{ mesh11sd_interfaces | default([]) }}"
   when: mesh11sd_enabled
 
-# Configure mesh interface
 - name: Configure mesh interface
   ansible.builtin.include_tasks: configure.yml
   when: mesh11sd_enabled and mesh11sd_settings | length > 0
 
-# Apply changes and reload wireless service
 - name: Apply changes and reload wireless
   when: mesh11sd_enabled
   uci:

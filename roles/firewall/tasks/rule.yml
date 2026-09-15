@@ -1,10 +1,8 @@
 ---
-# Set state status for firewall rule
 - name: Set state status for firewall rule {{ item.id | default('@rule[-1]') }}
   ansible.builtin.set_fact:
     firewall_rule_state: "{{ item.state | default('present') }}"
 
-# Delete firewall rule
 - name: Delete firewall rule {{ item.id }}
   when: "'absent' in firewall_rule_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: rule
 
-# Create and configure firewall rule
 - name: Create and configure firewall rule
   when: "'present' in firewall_rule_state"
   block:
-    # Create firewall rule
     - name: Create firewall rule {{ item.id | default('@rule[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@rule[-1]') }}"
         type: rule
 
-    # Configure firewall rule
     - name: Configure firewall rule {{ item.id | default('@rule[-1]') }}
       uci:
         command: set

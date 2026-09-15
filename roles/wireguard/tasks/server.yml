@@ -1,10 +1,8 @@
 ---
-# Set state status for wireguard interface
 - name: Set state status for wireguard interface {{ item.id }}
   ansible.builtin.set_fact:
     wireguard_interface_state: "{{ item.state | default('present') }}"
 
-# Delete wireguard interface
 - name: Delete wireguard interface {{ item.id }}
   when: "'absent' in wireguard_interface_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: interface
 
-# Create and configure wireguard interface
 - name: Create and configure user-defined wireguard interface
   when: "'present' in wireguard_interface_state"
   block:
-    # Create wireguard interface
     - name: Create wireguard interface {{ item.id }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id }}"
         type: interface
 
-    # Configure wireguard interface
     - name: Configure user-defined wireguard interface {{ item.id }}
       when: >
         item.private_key is defined and
@@ -41,13 +36,11 @@
           addresses: "{{ item.addresses | default(omit) }}"
           listen_port: "{{ item.listen_port | default(omit) }}"
 
-    # Configure new wireguard interface
     - name: Configure new wireguard interface
       when: >
         item.private_key is undefined or
         item.private_key | length == 0
       block:
-        # Check current wireguard private key
         - name: Check current wireguard private key
           uci:
             command: get
@@ -62,13 +55,11 @@
             wireguard_current_private_key.failed | default(false) and
             'Entry not found' not in wireguard_current_private_key.msg | default('')
 
-        # Set current generated wireguard private key fact
         - name: Set current wireguard private key fact
           ansible.builtin.set_fact:
             wireguard_private_key: "{{ wireguard_current_private_key.result }}"
           when: wireguard_current_private_key.result | default('') | length > 0
 
-        # Generate wireguard private key
         - name: Generate wireguard private key  # noqa: inline-env-var
           ansible.builtin.command:
             cmd: umask go= && wg genkey
@@ -78,7 +69,6 @@
           no_log: true
           when: wireguard_current_private_key.result | default('') | length == 0
 
-        # Set newly generated wireguard private key fact
         - name: Set newly generated wireguard private key fact
           ansible.builtin.set_fact:
             wireguard_private_key: "{{ wireguard_new_private_key.stdout }}"
@@ -86,7 +76,6 @@
             wireguard_new_private_key.stdout is defined and
             wireguard_new_private_key.stdout | length > 0
 
-        # Configure wireguard interface
         - name: Configure wireguard interface {{ item.id }}
           uci:
             command: set
@@ -99,7 +88,6 @@
               addresses: "{{ item.addresses | default(omit) }}"
               listen_port: "{{ item.listen_port | default(omit) }}"
 
-    # Configure wireguard peers
     - name: Configure wireguard peers
       ansible.builtin.include_tasks: peer.yml
       vars:

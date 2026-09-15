@@ -23,7 +23,6 @@
 - name: Replace ath10k-ct firmware and module
   when: mesh11sd_replace_ath10k_ct_driver
   block:
-    # Get current ath10k module package name
     - name: Check current ath10k module release  # noqa: inline-env-var
       ansible.builtin.command:
         cmd: "opkg list-installed | grep kmod-ath10k | awk '{print $1}'"  # yamllint disable-line rule:quoted-strings
@@ -31,30 +30,25 @@
       register: mesh11sd_ath10k_kmod_current_release
       changed_when: false
 
-    # Set current ath10k module package name fact
     - name: Set current ath10k module release fact
       ansible.builtin.set_fact:
         mesh11sd_ath10k_kmod_pkg_name: "{{ mesh11sd_ath10k_kmod_current_release.stdout }}"
 
-    # Set current driver release name fact
     - name: Set current driver release name fact
       ansible.builtin.set_fact:
         mesh11sd_ath10k_driver_pkg_name: "{{ mesh11sd_ath10k_firmware_current_release.stdout }}"
 
-    # Remove current driver
     - name: Remove current driver
       opkg:
         name: "{{ item }}"
         state: absent
       loop: ["{{ mesh11sd_ath10k_kmod_pkg_name }}", "{{ mesh11sd_ath10k_driver_pkg_name }}"]
 
-    # Update opkg cache
     - name: Update opkg cache
       ansible.builtin.command:
         cmd: opkg update
       changed_when: false
 
-    # Install new driver
     - name: Install new driver
       opkg:
         name: "{{ item }}"

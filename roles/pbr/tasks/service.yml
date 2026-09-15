@@ -1,5 +1,4 @@
 ---
-# Configure service settings
 - name: Configure service settings
   uci:
     command: set

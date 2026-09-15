@@ -1,5 +1,4 @@
 ---
-# Configure system settings
 - name: Configure system settings
   uci:
     command: set

@@ -1,20 +1,16 @@
 ---
-# Get rootfs block device name
 - name: Get rootfs block device name  # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: 'sed -n -e "/\s\/overlay\s.*$/s///p" /etc/mtab'  # yamllint disable-line rule:quoted-strings
   register: extroot_rootfs_block_device_name
   changed_when: false
 
-# Set rootfs block device name fact
 - name: Set rootfs block device name fact
   ansible.builtin.set_fact:
     extroot_block_device_name: "{{ extroot_rootfs_block_device_name.stdout }}"
 
-# Mount rootfs data to another directory
 - name: Mount rootfs data to another directory
   block:
-    # Add new mount point for root
     - name: Add new mount point for root
       uci:
         command: add
@@ -22,7 +18,6 @@
         section: rwm
         type: mount
 
-    # Configure new mount point for root
     - name: Configure new mount point for root
       uci:
         command: set
@@ -33,22 +28,18 @@
           device: "{{ extroot_block_device_name }}"
           target: /rwm
 
-# Get external USB device UUID
 - name: Get external usb device uuid
   ansible.builtin.command:
     cmd: 'block info /dev/{{ extroot_device }}1 | grep -o -e "UUID=\S*"'  # yamllint disable-line rule:quoted-strings
   register: extroot_external_usb_device_uuid
   changed_when: false
 
-# Set external usb device uuid fact
 - name: Set external usb device uuid fact
   ansible.builtin.set_fact:
     extroot_usb_device_uuid: '{{ extroot_external_usb_device_uuid.stdout | regex_search(''(?<=")(.*?)(?=")'') }}'
 
-# Mount external USB as overlayfs
 - name: Mount external usb as overlayfs
   block:
-    # Add overlay mount point
     - name: Add overlay mount point
       uci:
         command: add
@@ -56,7 +47,6 @@
         section: overlay
         type: mount
 
-    # Configure overlay mount point
     - name: Configure overlay mount point
       uci:
         command: set

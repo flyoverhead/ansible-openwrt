@@ -1,25 +1,21 @@
 ---
-# Remove non-mesh wpad packages
 - name: Remove non-mesh wpad packages
   opkg:
     name: "{{ item }}"
     state: absent
   loop: "{{ batman_non_mesh_pkgs }}"
 
-# Update opkg cache
 - name: Update opkg cache
   ansible.builtin.command:
     cmd: opkg update
   changed_when: false
 
-# Install batman packages
 - name: Install batman packages
   opkg:
     name: "{{ item }}"
     state: present
   loop: "{{ batman_pkgs }}"
 
-# Check B.A.T.M.A.N. LuCI package status
 # `grep` exits 1 when the package is absent, which is exactly the case the block
 # below handles, so it must not fail the task
 - name: Check batman luci package status  # noqa: inline-env-var
@@ -30,13 +26,11 @@
   changed_when: false
   failed_when: false
 
-# Install B.A.T.M.A.N. LuCI package
 - name: Install batman luci package
   when: >
     batman_luci_package_status.stdout is undefined or
     batman_luci_package_status.stdout | length == 0
   block:
-    # Copy local package file
     - name: Copy luci-proto-batman-adv package file
       ansible.builtin.copy:
         src: luci-proto-batman-adv.ipk

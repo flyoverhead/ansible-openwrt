@@ -1,10 +1,8 @@
 ---
-# Set state status for wireless interface
 - name: Set state status for wireless interface {{ item.id }}
   ansible.builtin.set_fact:
     wireless_interface_state: "{{ item.state | default('present') }}"
 
-# Delete wireless interface
 - name: Delete wireless interface {{ item.id }}
   when: "'absent' in wireless_interface_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: wifi-iface
 
-# Create and configure wireless interface
 - name: Create and configure wireless interface
   when: "'present' in wireless_interface_state"
   block:
-    # Create wireless interface
     - name: Create wireless interface {{ item.id }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id }}"
         type: wifi-iface
 
-    # Generate mobility domain identifier
     # 802.11r needs every AP sharing an SSID to advertise the same domain, so it
     # is derived from the SSID rather than configured per device
     - name: Generate mobility domain identifier  # noqa: inline-env-var
@@ -38,7 +33,6 @@
         (item.mobility_domain is defined and item.mobility_domain | int == 1) and
         (item.ssid is defined and item.ssid | length > 0)
 
-    # Configure wireless interface
     - name: Configure wireless interface {{ item.id }}
       uci:
         command: set

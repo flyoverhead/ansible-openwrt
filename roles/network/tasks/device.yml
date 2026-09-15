@@ -1,10 +1,8 @@
 ---
-# Set state status for network device
 - name: Set state status for network device {{ item.id | default('@device[-1]') }}
   ansible.builtin.set_fact:
     network_device_state: "{{ item.state | default('present') }}"
 
-# Delete network device
 - name: Delete network device {{ item.id }}
   when: "'absent' in network_device_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: device
 
-# Create and configure network device
 - name: Create and configure network device
   when: "'present' in network_device_state"
   block:
-    # Create network device
     - name: Create network device {{ item.id | default('@device[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@device[-1]') }}"
         type: device
 
-    # Configure network device
     - name: Configure network device {{ item.id | default('@device[-1]') }}
       uci:
         command: set
