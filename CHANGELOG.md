@@ -2,6 +2,12 @@
 
 All notable changes to `flyoverhead.openwrt`.
 
+## 2.0.1
+
+### Changed
+
+- **Comments only.** Removed 242 comment lines across all twelve roles whose only content restated the `name:` of the task directly below them (`# Create wireguard peer` above `- name: Create wireguard peer {{ wgpeer.id }}`). Comment density drops from 13.6% to 6.7%. Every comment explaining *why* is untouched, including the `uci get` "Entry not found" handling in `extroot/tasks/check.yml`, the destructive-partition warning in `extroot/tasks/usb.yml`, the 802.11r mobility-domain note in `wireless/tasks/interface.yml` and the `wifi config` regeneration note in the wireless handlers. Where a redundant header sat on top of a real explanation, only the header line went. No task, template, default or handler behaviour changed; releasing it so the role files that ship in the Galaxy tarball match the repository.
+
 ## 2.0.0
 
 First release since the collection was brought in line with the other
