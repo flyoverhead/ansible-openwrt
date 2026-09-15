@@ -7,3 +7,4 @@
 .yamllint
 .DS_Store
 .ansible
+.superpowers/
