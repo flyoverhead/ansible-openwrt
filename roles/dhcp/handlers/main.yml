@@ -1,5 +1,4 @@
 ---
-# Reload dhcp service
 - name: Reload dhcp
   ansible.builtin.service:
     name: "{{ item }}"

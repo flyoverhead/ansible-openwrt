@@ -1,5 +1,4 @@
 ---
-# Reload system service
 - name: Reload system
   ansible.builtin.service:
     name: system

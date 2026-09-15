@@ -1,5 +1,4 @@
 ---
-# Reload wireless service
 # `wifi config` regenerates /etc/config/wireless from the committed UCI state,
 # `wifi reload` brings the radios back up with it
 - name: Reload wireless

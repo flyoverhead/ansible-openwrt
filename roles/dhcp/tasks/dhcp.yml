@@ -1,10 +1,8 @@
 ---
-# Set state status for dhcp pool
 - name: Set state status for dhcp pool {{ item.id | default(item.interface) }}
   ansible.builtin.set_fact:
     dhcp_state: "{{ item.state | default('present') }}"
 
-# Delete dhcp pool for interface
 - name: Delete dhcp pool for interface {{ item.id | default(item.interface) }}
   when: "'absent' in dhcp_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id | default(item.interface) }}"
     type: dhcp
 
-# Create and configure dhcp pool for interface
 - name: Create and configure dhcp pool for interface
   when: "'present' in dhcp_state"
   block:
-    # Create dhcp pool for interface
     - name: Create dhcp pool for interface {{ item.id | default(item.interface) }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default(item.interface) }}"
         type: dhcp
 
-    # Configure dhcp pool
     - name: Configure dhcp pool for {{ item.id | default(item.interface) }}
       uci:
         command: set

@@ -1,10 +1,8 @@
 ---
-# Set state status for network route
 - name: Set state status for network route {{ item.id | default('@route[-1]') }}
   ansible.builtin.set_fact:
     network_route_state: "{{ item.state | default('present') }}"
 
-# Delete network route
 - name: Delete network route {{ item.id }}
   when: "'absent' in network_route_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: route
 
-# Create and configure network route
 - name: Create and configure network route
   when: "'present' in network_route_state"
   block:
-    # Create network route
     - name: Create network route {{ item.id | default('@route[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@route[-1]') }}"
         type: route
 
-    # Configure network route
     - name: Configure network route {{ item.id | default('@route[-1]') }}
       uci:
         command: set

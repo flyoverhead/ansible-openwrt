@@ -1,10 +1,8 @@
 ---
-# Set state status for policy
 - name: Set state status for policy {{ item.id | default('@policy[-1]') }}
   ansible.builtin.set_fact:
     pbr_policy_state: "{{ item.state | default('present') }}"
 
-# Delete policy
 - name: Delete policy {{ item.id }}
   when: "'absent' in pbr_policy_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id | default('@policy[-1]') }}"
     type: policy
 
-# Create and configure policy
 - name: Create and configure policy
   when: "'present' in pbr_policy_state"
   block:
-    # Create policy
     - name: Create policy {{ item.id | default('@policy[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@policy[-1]') }}"
         type: policy
 
-    # Configure policy
     - name: Configure policy {{ item.id | default('@policy[-1]') }}
       uci:
         command: set

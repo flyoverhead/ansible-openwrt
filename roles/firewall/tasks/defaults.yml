@@ -1,5 +1,4 @@
 ---
-# Configure defaults settings
 - name: Configure defaults settings
   uci:
     command: set

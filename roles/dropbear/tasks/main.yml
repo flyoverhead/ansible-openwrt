@@ -1,10 +1,8 @@
 ---
-# Configure dropbear section
 - name: Configure dropbear section
   ansible.builtin.include_tasks: dropbear.yml
   when: dropbear_settings | length > 0
 
-# Copy SSH authorized keys
 - name: Copy ssh authorized keys
   ansible.builtin.copy:
     src: authorized_keys
@@ -14,7 +12,6 @@
     mode: "0600"
     force: true
 
-# Apply changes and reload dropbear service
 - name: Apply changes and reload dropbear
   uci:
     command: commit

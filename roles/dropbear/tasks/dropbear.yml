@@ -1,5 +1,4 @@
 ---
-# Configure dropbear settings
 - name: Configure dropbear settings
   uci:
     command: set

@@ -1,10 +1,8 @@
 ---
-# Set state status for B.A.T.M.A.N. interface
 - name: Set state status for batman interface {{ item.id }}
   ansible.builtin.set_fact:
     batman_interface_state: "{{ item.state | default('present') }}"
 
-# Delete B.A.T.M.A.N. interface
 - name: Delete batman interface {{ item.id }}
   when: "'absent' in batman_interface_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: interface
 
-# Create and configure B.A.T.M.A.N. interface
 - name: Create and configure batman interface
   when: "'present' in batman_interface_state"
   block:
-    # Create B.A.T.M.A.N. interface
     - name: Create batman interface {{ item.id }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id }}"
         type: interface
 
-    # Configure B.A.T.M.A.N. interface
     - name: Configure batman interface {{ item.id }}
       uci:
         command: set

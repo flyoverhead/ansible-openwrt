@@ -1,10 +1,8 @@
 ---
-# Set state status for network rule
 - name: Set state status for network rule {{ item.id | default('@rule[-1]') }}
   ansible.builtin.set_fact:
     network_rule_state: "{{ item.state | default('present') }}"
 
-# Delete network rule
 - name: Delete network rule {{ item.id }}
   when: "'absent' in network_rule_state"
   uci:
@@ -13,11 +11,9 @@
     section: "{{ item.id }}"
     type: rule
 
-# Create and configure network rule
 - name: Create and configure network rule
   when: "'present' in network_rule_state"
   block:
-    # Create network rule
     - name: Create network rule {{ item.id | default('@rule[-1]') }}
       uci:
         command: add
@@ -25,7 +21,6 @@
         section: "{{ item.id | default('@rule[-1]') }}"
         type: rule
 
-    # Configure network rule
     - name: Configure network rule {{ item.id | default('@rule[-1]') }}
       uci:
         command: set
