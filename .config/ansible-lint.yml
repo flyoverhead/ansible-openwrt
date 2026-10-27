@@ -1,0 +1,18 @@
+---
+
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+profile: production
+
+exclude_paths:
+  - .ansible
+  - .cache*
+  - .git*
+  - .venv
+
+skip_list:
+  - fqcn[action]
+  - fqcn[action-core]
+  - name[casing]
+  - role-name
+  - yaml[quoted-strings]
