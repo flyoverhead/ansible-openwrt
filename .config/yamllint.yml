@@ -1,0 +1,72 @@
+---
+
+# https://yamllint.readthedocs.io/en/stable/configuration.html#default-configuration
+
+ignore:
+  - .ansible
+  - .cache*
+  - .git*
+  - .venv
+
+yaml-files: # list of files to be checked
+  - '*.yaml'
+  - '*.yml'
+
+# https://yamllint.readthedocs.io/en/stable/rules.html
+rules:
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.braces
+  braces: # control the use of flow mappings or number of spaces inside braces ({ and })
+    forbid: non-empty # forbid the use of all flow mappings except for empty ones
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.empty_lines
+  empty-lines: # set a maximal number of allowed consecutive blank lines
+    max: 1 # the maximal number of empty lines allowed in the document
+    max-start: 1 # the maximal number of empty lines allowed at the beginning of the file
+    max-end: 1 # the maximal number of empty lines allowed at the end of the file
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.hyphens
+  hyphens: # control the number of spaces after hyphens (-)
+    max-spaces-after: 1 # the maximal number of spaces allowed after hyphens
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.indentation
+  indentation: # control the indentation
+    spaces: 2 # the indentation width, in spaces
+    indent-sequences: true # block sequences should be indented
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.line_length
+  line-length: # set a limit to lines length
+    max: 150 # the maximal (inclusive) length of lines
+    allow-non-breakable-words: true # allow non breakable words (without spaces inside) to overflow the limit
+    allow-non-breakable-inline-mappings: false # don't allow non-breakable words in inline mappings
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.new_line_at_end_of_file
+  new-line-at-end-of-file: enable # require a new line character (\n) at the end of files
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.octal_values
+  octal-values: # prevent values with octal numbers
+    forbid-implicit-octal: true # prevent numbers starting with 0
+    forbid-explicit-octal: true # prevent numbers starting with 0o
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.quoted_strings
+  quoted-strings: # forbid any string values that are not quoted, or prevent quoted strings without needing it
+    quote-type: any # allowed quotes
+    required: only-when-needed # only allowed when really needed
+    extra-allowed: # PCRE regexes to allow quoted string values
+      - ^ssh-rsa.+ # allow quoted SSH public keys with RSA (string length > 150)
+      - ^0.+ # allow quoated numbers starting with 0
+    allow-quoted-quotes: true # allows using disallowed quotes for strings with allowed quotes inside
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.trailing_spaces
+  trailing-spaces: enable # forbid trailing spaces at the end of lines
+
+  # https://yamllint.readthedocs.io/en/stable/rules.html#module-yamllint.rules.truthy
+  truthy: # forbid non-explicitly typed truthy values other than allowed ones
+    allowed-values: # the list of truthy values which will be ignored during linting
+      - 'True'
+      - 'False'
+      - 'true'
+      - 'false'
+    check-keys: true # enable verification for keys in mappings
